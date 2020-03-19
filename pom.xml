@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.gophie</groupId>
     <artifactId>gophie</artifactId>
-    <version>0.0.1</version>
+    <version>2.0.1</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,11 +20,11 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>org.gophie.Gophie</mainClass>
+              <mainClass>org.gophie2.Gophie</mainClass>
             </manifest>
           </archive>
         </configuration>
-        
+
       </plugin>
     </plugins>
   </build>
