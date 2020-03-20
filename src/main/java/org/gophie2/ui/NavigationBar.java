@@ -27,6 +27,7 @@ import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.fonts.DefaultFont;
 import org.gophie2.fonts.IconFont;
+import org.gophie2.images.ImageLoader;
 
 import org.gophie2.net.GopherItem;
 import org.gophie2.ui.event.NavigationInputListener;
@@ -239,7 +240,7 @@ public class NavigationBar extends JPanel {
         });
 
         /* create the status indicator */
-        ImageIcon statusIconImage = ConfigurationManager.getImageIcon("loading.gif");
+        ImageIcon statusIconImage = ImageLoader.load("loading.gif");
         statusIcon = new JLabel(statusIconImage);
         statusIcon.setBorder(new EmptyBorder(0, 8, 0, 2));
         statusIcon.setOpaque(false);

@@ -42,27 +42,6 @@ public class ConfigurationManager {
     }
 
     /**
-     * Returns an image icon from the resources
-     *
-     * @param name Name of the image icon file from the resources
-     *
-     * @return The ImageIcon object from the resources
-     */
-    public static ImageIcon getImageIcon(String name) {
-        ImageIcon result = null;
-
-        try {
-            /* try to open the font for icon display */
-            result = new ImageIcon(Gophie.class.getResource(name));
-        } catch (Exception ex) {
-            /* Ouchie, this will look bad... */
-            System.out.println("Unable to load the image icon (" + name + "): " + ex.getMessage());
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the directory where all the downloads should be stored in which
      * usually resides in the user home
      *
