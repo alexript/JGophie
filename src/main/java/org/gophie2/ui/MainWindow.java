@@ -279,15 +279,6 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
         }
     }
 
-    /**
-     * Process a request to go to an address or URL
-     *
-     * @param addressText The text or URL of the address, the client will guess
-     * the correct URL
-     *
-     * @param contentType The expected content type of the content behind the
-     * address
-     */
     @Override
     public void addressRequested(String addressText, GopherItem item) {
         /* check if this file is binary or not as
@@ -565,8 +556,9 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
 
     /**
      * Reports failed page load
-     * @param error
-     * @param url
+     *
+     * @param error error enum
+     * @param url url
      */
     @Override
     public void pageLoadFailed(GopherError error, GopherUrl url) {
@@ -603,11 +595,6 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
         this.navigationBar.setIsLoading(false);
     }
 
-    /**
-     * Report progress on the page loading
-     * @param url
-     * @param byteCount
-     */
     @Override
     public void progress(GopherUrl url, long byteCount) {
         /* report the download size in the title bar */
@@ -630,6 +617,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
 
     /**
      * Updates the gopher home with the provided url
+     *
      * @param url
      */
     @Override
@@ -642,6 +630,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
 
     /**
      * initiates the download of the requested file
+     *
      * @param item
      */
     @Override
@@ -651,6 +640,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
 
     /**
      * Saves the current page to file
+     *
      * @param page
      */
     @Override
