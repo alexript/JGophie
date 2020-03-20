@@ -32,6 +32,8 @@ import javax.swing.border.EmptyBorder;
 import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ColorPalette.PColor;
 import org.gophie2.config.ConfigurationManager;
+import org.gophie2.fonts.DefaultFont;
+import org.gophie2.fonts.IconFont;
 
 import org.gophie2.ui.event.MessageViewListener;
 
@@ -49,7 +51,7 @@ public class MessageView extends JPanel {
         ColorPalette colors = ConfigurationManager.getColors();
 
         /* get the icon font for this navigation bar */
-        this.iconFont = ConfigurationManager.getIconFont(19f);
+        this.iconFont = new IconFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "MESSAGE_ICONS_SIZE", 19f));
 
         /* set box layout for this message view */
         this.setLayout(new BorderLayout());
@@ -63,7 +65,7 @@ public class MessageView extends JPanel {
         this.messageIcon.setForeground(colors.getMessageviewText());
 
         this.messageText = new JLabel();
-        this.messageText.setFont(ConfigurationManager.getDefaultFont(11f));
+        this.messageText.setFont(new DefaultFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "MESSAGE_TEXT_SIZE", 11f)));
         this.messageText.setForeground(colors.getMessageviewText());
 
         this.buttonPanel = new JPanel();
@@ -86,7 +88,7 @@ public class MessageView extends JPanel {
         String labelTitle = String.format("<html><div style=\"border:1px solid %s; padding:2px 6px 2px 6px;border-radius:6px;\">%s</div></html>", buttonColor, text);
         JLabel customButton = new JLabel(labelTitle);
         customButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        customButton.setFont(ConfigurationManager.getDefaultFont(11f));
+        customButton.setFont(new DefaultFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "MESSAGE_BUTTON_SIZE", 11f)));
         customButton.setBorder(new EmptyBorder(0, 5, 0, 5));
         customButton.setForeground(buttonColor);
         return customButton;

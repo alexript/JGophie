@@ -121,6 +121,18 @@ public class ConfigFile extends IniEditor {
         return Integer.parseInt(v.trim());
     }
 
+    public float getFloat(String section, String option) {
+        return getFloat(section, option, 0);
+    }
+
+    public float getFloat(String section, String option, float defaultValue) {
+        String v = get(section, option);
+        if (v == null) {
+            return defaultValue;
+        }
+        return Float.parseFloat(v.trim());
+    }
+
     public boolean getBool(String section, String option) {
         return getBool(section, option, false);
     }

@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigurationManager;
+import org.gophie2.fonts.DefaultFont;
 
 /**
  *
@@ -41,6 +42,6 @@ public class SearchTextField extends JTextField {
         setBackground(colors.getSearchBackground());
         setForeground(colors.getSearchText());
         setCaretColor(colors.getSearchText());
-        setFont(ConfigurationManager.getDefaultFont(14f));
+        setFont(new DefaultFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "SEARCHPANEL_TEXT_SIZE", 14f)));
     }
 }

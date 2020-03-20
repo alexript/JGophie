@@ -24,6 +24,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 import org.gophie2.config.ConfigurationManager;
+import org.gophie2.fonts.DefaultFont;
+import org.gophie2.fonts.IconFont;
 import org.gophie2.ui.event.ActionButtonEventListener;
 
 public class ActionButton extends JPanel {
@@ -59,14 +61,14 @@ public class ActionButton extends JPanel {
         this.iconLabel = new JLabel(iconText);
         this.iconLabel.setBorder(new EmptyBorder(0, 0, 0, 6));
         this.iconLabel.setOpaque(false);
-        this.iconLabel.setFont(ConfigurationManager.getIconFont(14f));
+        this.iconLabel.setFont(new IconFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "ACTION_ICONS_SIZE", 14f)));
         this.iconLabel.setForeground(inactiveTextColorHex);
         this.add(iconLabel, BorderLayout.WEST);
 
         /* text for the button using the default text font */
         this.textLabel = new JLabel(text);
         this.textLabel.setOpaque(false);
-        this.textLabel.setFont(ConfigurationManager.getDefaultFont(12f));
+        this.textLabel.setFont(new DefaultFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "ACTION_TEXT_SIZE", 12f)));
         this.textLabel.setForeground(inactiveTextColorHex);
         this.add(textLabel, BorderLayout.EAST);
 

@@ -23,7 +23,10 @@ import javax.swing.border.*;
 import javax.swing.*;
 import java.util.*;
 import org.gophie2.config.ColorPalette;
+import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
+import org.gophie2.fonts.DefaultFont;
+import org.gophie2.fonts.IconFont;
 
 import org.gophie2.net.GopherItem;
 import org.gophie2.ui.event.NavigationInputListener;
@@ -64,8 +67,10 @@ public class NavigationBar extends JPanel {
     public NavigationBar(Color backgroundColor, Color textColor, Color textHoverColor) {
         inputListenerList = new ArrayList<>();
 
+        ConfigFile configFile = ConfigurationManager.getConfigFile();
+
         /* get the icon font from the configuration */
-        iconFont = ConfigurationManager.getIconFont(19f);
+        iconFont = new IconFont(configFile.getFloat("Fonts", "NAVIGATIONBAR_ICONS_SIZE", 19f));
 
         /* store the text color locally */
         this.textHoverColor = textHoverColor;
@@ -301,7 +306,7 @@ public class NavigationBar extends JPanel {
     private JTextField createAddressInput() {
         JTextField inputField = new JTextField();
         inputField.setBorder(new EmptyBorder(4, 10, 6, 4));
-        inputField.setFont(ConfigurationManager.getDefaultFont(14f));
+        inputField.setFont(new DefaultFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "NAVIGATION_TEXT_SIZE", 14f)));
         inputField.setForeground(textColor);
         inputField.setOpaque(false);
         add(inputField);

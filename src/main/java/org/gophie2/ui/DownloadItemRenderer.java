@@ -21,7 +21,10 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.gophie2.config.ColorPalette;
+import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
+import org.gophie2.fonts.ConsoleFont;
+import org.gophie2.fonts.IconFont;
 import org.gophie2.view.DataSizeView;
 import org.gophie2.net.DownloadItem;
 
@@ -40,6 +43,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
             DownloadItem value, int index,
             boolean isSelected, boolean cellHasFocus) {
 
+        ConfigFile configFile = ConfigurationManager.getConfigFile();
         ColorPalette colors = ConfigurationManager.getColors();
 
         /* render the cell for this download item */
@@ -58,7 +62,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
 
         /* show the file name in the title */
         this.titleLabel.setText(item.getFileName());
-        Font titleFont = ConfigurationManager.getConsoleFont(15f);
+        Font titleFont = new ConsoleFont(configFile.getFloat("Fonts", "DOWNLOADITEM_TITLE_SIZE", 15f));
         this.titleLabel.setFont(titleFont.deriveFont(titleFont.getStyle() | Font.BOLD));
         this.titleLabel.setForeground(colors.getDownloadTitle());
 
@@ -89,7 +93,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
         this.textLabel.setText(statusText);
         this.textLabel.setBorder(new EmptyBorder(4, 0, 0, 0));
         this.textLabel.setForeground(colors.getDownloadText());
-        Font textFont = ConfigurationManager.getConsoleFont(13f);
+        Font textFont = new ConsoleFont(configFile.getFloat("Fonts", "DOWNLOADITEM_STATUS_SIZE", 13f));
         this.textLabel.setFont(textFont);
 
         this.add(this.titleLabel);

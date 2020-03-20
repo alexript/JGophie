@@ -14,31 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gophie2.ui.tk.search;
+package org.gophie2.fonts;
 
 import java.awt.Font;
-import javax.swing.JLabel;
-import javax.swing.border.EmptyBorder;
 import org.gophie2.config.ConfigurationManager;
-import org.gophie2.fonts.IconFont;
 
 /**
  *
  * @author malyshev
  */
-public class SearchIcon extends JLabel {
+public class IconFont extends Font {
 
-    private static final long serialVersionUID = 1230678513627465485L;
+    private static final long serialVersionUID = 5689090941159506749L;
 
-    public SearchIcon() {
-        super("");
-        init();
-    }
-
-    private void init() {
-        Font iconFont = new IconFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "SEARCH_ICONS_SIZE", 16f));
-        setFont(iconFont);
-        setBorder(new EmptyBorder(0, 0, 0, 8));
-        setForeground(ConfigurationManager.getColors().getSearchTitle());
+    public IconFont(float size) {
+        super(FontLoader.getFont(ConfigurationManager.getConfigFile().get("Fonts", "ICONS_FONT", "Feather.ttf"), size));
     }
 }

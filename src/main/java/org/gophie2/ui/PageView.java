@@ -39,6 +39,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigurationManager;
+import org.gophie2.fonts.ConsoleFont;
 
 import org.gophie2.net.GopherItem;
 import org.gophie2.net.GopherPage;
@@ -298,7 +299,7 @@ public class PageView extends JScrollPane {
         });
 
         /* try to open the font for icon display */
-        textFont = ConfigurationManager.getConsoleFont(17f);
+        textFont = new ConsoleFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "PAGE_SIZE", 17f));
 
         /* apply the font settings to the view pane */
         viewPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);

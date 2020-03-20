@@ -25,8 +25,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import javax.swing.border.EmptyBorder;
-import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
+import org.gophie2.fonts.DefaultFont;
 
 import org.gophie2.ui.event.SearchInputListener;
 
@@ -60,7 +60,7 @@ public class SearchPanel extends JPanel {
 
     public void performSearch(String title, SearchInputListener listener) {
         searchTitle.setText(title);
-        searchTitle.setFont(ConfigurationManager.getDefaultFont(14f));
+        searchTitle.setFont(new DefaultFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "SEARCHPANEL_TITLE_SIZE", 14f)));
         searchText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
