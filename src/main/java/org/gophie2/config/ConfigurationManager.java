@@ -39,6 +39,10 @@ public class ConfigurationManager {
         return ConfigurationManager.configFile;
     }
 
+    public static ColorPalette getColors() {
+        return new ColorPalette(getConfigFile());
+    }
+
     /**
      * Returns a Font from the resources
      *

@@ -20,7 +20,7 @@ package org.gophie2.ui;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import org.gophie2.config.ConfigFile;
+import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.view.DataSizeView;
 import org.gophie2.net.DownloadItem;
@@ -39,8 +39,8 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
     public Component getListCellRendererComponent(JList<? extends DownloadItem> list,
             DownloadItem value, int index,
             boolean isSelected, boolean cellHasFocus) {
-        /* get the config file for the color schemes */
-        ConfigFile configFile = ConfigurationManager.getConfigFile();
+
+        ColorPalette colors = ConfigurationManager.getColors();
 
         /* render the cell for this download item */
         this.setOpaque(false);
@@ -50,7 +50,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
         /* highlight if this element is selected */
         if (isSelected == true) {
             this.setOpaque(true);
-            this.setBackground(configFile.getColor("Appearance", "DOWNLOAD_SELECTED_COLOR", "#cf9a0c"));
+            this.setBackground(colors.getDownloadSelected());
         }
 
         /* get the gopher item of this download */
@@ -60,7 +60,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
         this.titleLabel.setText(item.getFileName());
         Font titleFont = ConfigurationManager.getConsoleFont(15f);
         this.titleLabel.setFont(titleFont.deriveFont(titleFont.getStyle() | Font.BOLD));
-        this.titleLabel.setForeground(configFile.getColor("Appearance", "DOWNLOAD_TITLE_COLOR", "#ffffff"));
+        this.titleLabel.setForeground(colors.getDownloadTitle());
 
         /* create the information text based on the status */
         String statusText = "Download not started";
@@ -88,7 +88,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
         /* set the text to the status text label */
         this.textLabel.setText(statusText);
         this.textLabel.setBorder(new EmptyBorder(4, 0, 0, 0));
-        this.textLabel.setForeground(configFile.getColor("Appearance", "DOWNLOAD_TEXT_COLOR", "#e0e0e0"));
+        this.textLabel.setForeground(colors.getDownloadText());
         Font textFont = ConfigurationManager.getConsoleFont(13f);
         this.textLabel.setFont(textFont);
 

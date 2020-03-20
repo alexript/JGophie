@@ -22,7 +22,7 @@ import java.awt.event.*;
 import javax.swing.border.*;
 import javax.swing.*;
 import java.util.*;
-import org.gophie2.config.ConfigFile;
+import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigurationManager;
 
 import org.gophie2.net.GopherItem;
@@ -34,9 +34,9 @@ public class NavigationBar extends JPanel {
     private static final long serialVersionUID = 1L;
 
     /* static variables */
-    static Color textColorHex;
-    static Color textHoverColorHex;
-    private final String selectionColor = "#ffffff";
+    private final Color textColor;
+    private final Color textHoverColor;
+
 
     /* local variables and objects */
     private final Font iconFont;
@@ -62,28 +62,25 @@ public class NavigationBar extends JPanel {
         @textHoverColor     Color of the text and icons on hover
      */
     public NavigationBar(Color backgroundColor, Color textColor, Color textHoverColor) {
-        this.inputListenerList = new ArrayList<>();
-
-        /* get the config file for color scheme */
-        ConfigFile configFile = ConfigurationManager.getConfigFile();
+        inputListenerList = new ArrayList<>();
 
         /* get the icon font from the configuration */
-        this.iconFont = ConfigurationManager.getIconFont(19f);
+        iconFont = ConfigurationManager.getIconFont(19f);
 
         /* store the text color locally */
-        NavigationBar.textHoverColorHex = textHoverColor;
-        NavigationBar.textColorHex = textColor;
+        this.textHoverColor = textHoverColor;
+        this.textColor = textColor;
 
         /* set the background color initially */
-        this.setBackgroundColor(backgroundColor);
+        setBackgroundColor(backgroundColor);
 
         /* set the layout for this navigation bar */
-        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        this.setBorder(new EmptyBorder(4, 4, 4, 4));
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setBorder(new EmptyBorder(4, 4, 4, 4));
 
         /* create the back navigation button */
-        this.backButton = this.createButton("");
-        this.backButton.addMouseListener(new MouseAdapter() {
+        backButton = this.createButton("");
+        backButton.addMouseListener(new MouseAdapter() {
             /* notify the listeners of the move back request */
             @Override
             public void mouseReleased(MouseEvent evt) {
@@ -99,7 +96,7 @@ public class NavigationBar extends JPanel {
             public void mouseEntered(MouseEvent evt) {
                 if (allowNavigateBack == true) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
-                    backButton.setForeground(NavigationBar.textHoverColorHex);
+                    backButton.setForeground(textHoverColor);
                 }
             }
 
@@ -107,13 +104,13 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                backButton.setForeground(NavigationBar.textColorHex);
+                backButton.setForeground(textColor);
             }
         });
 
         /* create the forward navigation button */
-        this.forwardButton = this.createButton("");
-        this.forwardButton.addMouseListener(new MouseAdapter() {
+        forwardButton = this.createButton("");
+        forwardButton.addMouseListener(new MouseAdapter() {
             /* notify the listeners of the forward move request */
             @Override
             public void mouseReleased(MouseEvent evt) {
@@ -129,7 +126,7 @@ public class NavigationBar extends JPanel {
             public void mouseEntered(MouseEvent evt) {
                 if (allowNavigateForward == true) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
-                    forwardButton.setForeground(NavigationBar.textHoverColorHex);
+                    forwardButton.setForeground(textHoverColor);
                 }
             }
 
@@ -137,13 +134,13 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                forwardButton.setForeground(NavigationBar.textColorHex);
+                forwardButton.setForeground(textColor);
             }
         });
 
         /* create the refresh button and handle it */
-        this.refreshButton = this.createButton("");
-        this.refreshButton.addMouseListener(new MouseAdapter() {
+        refreshButton = this.createButton("");
+        refreshButton.addMouseListener(new MouseAdapter() {
             /* initiate a refresh or cancel process */
             @Override
             public void mouseReleased(MouseEvent evt) {
@@ -166,20 +163,20 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseEntered(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
-                refreshButton.setForeground(NavigationBar.textHoverColorHex);
+                refreshButton.setForeground(textHoverColor);
             }
 
             /* revert back to the default cursor and default color */
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                refreshButton.setForeground(NavigationBar.textColorHex);
+                refreshButton.setForeground(textColor);
             }
         });
 
         /* create the refresh button and handle it */
-        this.homeButton = this.createButton("");
-        this.homeButton.addMouseListener(new MouseAdapter() {
+        homeButton = this.createButton("");
+        homeButton.addMouseListener(new MouseAdapter() {
             /* request navigation to the home page */
             @Override
             public void mouseReleased(MouseEvent evt) {
@@ -193,25 +190,26 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseEntered(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
-                homeButton.setForeground(NavigationBar.textHoverColorHex);
+                homeButton.setForeground(textHoverColor);
             }
 
             /* revert back to the default cursor and default color */
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                homeButton.setForeground(NavigationBar.textColorHex);
+                homeButton.setForeground(textColor);
             }
         });
 
         /* create the address input */
-        this.addressInput = this.createAddressInput();
-        this.addressInput.setSelectionColor(configFile.getColor("Appearance", "NAVIGATIONBAR_SELECTION_COLOR", this.selectionColor));
-        this.addressInput.setCaretColor(NavigationBar.textColorHex);
+        ColorPalette colors = ConfigurationManager.getColors();
+        addressInput = this.createAddressInput();
+        addressInput.setSelectionColor(colors.getNavigationbarSelection());
+        addressInput.setCaretColor(textColor);
 
         /* create the download button and handle it */
-        this.downloadButton = this.createButton("");
-        this.downloadButton.addMouseListener(new MouseAdapter() {
+        downloadButton = this.createButton("");
+        downloadButton.addMouseListener(new MouseAdapter() {
             /* notify the listeners of the forward move request */
             @Override
             public void mouseReleased(MouseEvent evt) {
@@ -224,24 +222,24 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseEntered(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
-                downloadButton.setForeground(NavigationBar.textHoverColorHex);
+                downloadButton.setForeground(textHoverColor);
             }
 
             /* revert back to the default cursor and default color */
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                downloadButton.setForeground(NavigationBar.textColorHex);
+                downloadButton.setForeground(textColor);
             }
         });
 
         /* create the status indicator */
         ImageIcon statusIconImage = ConfigurationManager.getImageIcon("loading.gif");
-        this.statusIcon = new JLabel(statusIconImage);
-        this.statusIcon.setBorder(new EmptyBorder(0, 8, 0, 2));
-        this.statusIcon.setOpaque(false);
-        this.statusIcon.setVisible(false);
-        this.add(this.statusIcon);
+        statusIcon = new JLabel(statusIconImage);
+        statusIcon.setBorder(new EmptyBorder(0, 8, 0, 2));
+        statusIcon.setOpaque(false);
+        statusIcon.setVisible(false);
+        add(this.statusIcon);
     }
 
     /**
@@ -250,7 +248,7 @@ public class NavigationBar extends JPanel {
      * @param value true enables navigation, false disables
      */
     public void setNavigateForward(Boolean value) {
-        this.allowNavigateForward = value;
+        allowNavigateForward = value;
     }
 
     /**
@@ -259,7 +257,7 @@ public class NavigationBar extends JPanel {
      * @param value true enables navigation, false disables
      */
     public void setNavigateBack(Boolean value) {
-        this.allowNavigateBack = value;
+        allowNavigateBack = value;
     }
 
     /**
@@ -268,14 +266,14 @@ public class NavigationBar extends JPanel {
      * @param status true when currently loading content, false if not
      */
     public void setIsLoading(Boolean status) {
-        this.isLoadingStatus = status;
+        isLoadingStatus = status;
 
         if (status == true) {
-            this.statusIcon.setVisible(true);
-            this.refreshButton.setText("");
+            statusIcon.setVisible(true);
+            refreshButton.setText("");
         } else {
-            this.statusIcon.setVisible(false);
-            this.refreshButton.setText("");
+            statusIcon.setVisible(false);
+            refreshButton.setText("");
         }
     }
 
@@ -283,7 +281,7 @@ public class NavigationBar extends JPanel {
         Adds a listener for navigation events
      */
     public void addListener(NavigationInputListener listener) {
-        this.inputListenerList.add(listener);
+        inputListenerList.add(listener);
     }
 
     /*
@@ -292,7 +290,7 @@ public class NavigationBar extends JPanel {
         @addressText    text to insert into address input
      */
     public void setAddressText(String addressText) {
-        this.addressInput.setText(addressText);
+        addressInput.setText(addressText);
     }
 
     /*
@@ -304,9 +302,9 @@ public class NavigationBar extends JPanel {
         JTextField inputField = new JTextField();
         inputField.setBorder(new EmptyBorder(4, 10, 6, 4));
         inputField.setFont(ConfigurationManager.getDefaultFont(14f));
-        inputField.setForeground(NavigationBar.textColorHex);
+        inputField.setForeground(textColor);
         inputField.setOpaque(false);
-        this.add(inputField);
+        add(inputField);
 
         inputField.addActionListener((ActionEvent e) -> {
             String requestedAddress = inputField.getText().trim();
@@ -330,14 +328,14 @@ public class NavigationBar extends JPanel {
         JLabel button = new JLabel(text);
 
         /* set the icon font */
-        button.setFont(this.iconFont);
-        button.setForeground(NavigationBar.textColorHex);
+        button.setFont(iconFont);
+        button.setForeground(textColor);
 
         /* set the border properly to give some space */
         button.setBorder(new EmptyBorder(0, 8, 0, 8));
 
         /* add the button the bar */
-        this.add(button);
+        add(button);
 
         return button;
     }
@@ -348,6 +346,6 @@ public class NavigationBar extends JPanel {
         @colorHex       the hex code for the background color
      */
     public void setBackgroundColor(Color colorHex) {
-        this.setBackground(colorHex);
+        setBackground(colorHex);
     }
 }

@@ -32,9 +32,6 @@ import org.gophie2.ui.event.SearchInputListener;
 
 public class SearchPanel extends JPanel {
 
-    /* constants */
-    public static final String SEARCH_BACKGROUND = "#248AC2";
-    public static final String SEARCH_TITLECOLOR = "#76bce3";
     private static final long serialVersionUID = 5104881772647618206L;
 
     JLabel searchTitle;
@@ -45,11 +42,10 @@ public class SearchPanel extends JPanel {
     }
 
     private void init() throws NumberFormatException {
-        ConfigFile configFile = ConfigurationManager.getConfigFile();
 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setBorder(new EmptyBorder(6, 12, 12, 14));
-        setBackground(configFile.getColor("Appearance", "SEARCH_BACKGROUND", SEARCH_BACKGROUND));
+        setBackground(ConfigurationManager.getColors().getSearchBackground());
 
         add(new SearchIcon());
 

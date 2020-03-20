@@ -16,12 +16,9 @@
  */
 package org.gophie2.ui.tk.search;
 
-import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
-import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
-import static org.gophie2.ui.tk.search.SearchPanel.SEARCH_TITLECOLOR;
 
 /**
  *
@@ -38,8 +35,6 @@ public class SearchTitle extends JLabel {
 
     private void init() {
         setBorder(new EmptyBorder(2, 0, 0, 12));
-        ConfigFile configFile = ConfigurationManager.getConfigFile();
-        Color fgColor = configFile.getColor("Appearance", "SEARCH_TITLECOLOR", SEARCH_TITLECOLOR);
-        setForeground(fgColor);
+        setForeground(ConfigurationManager.getColors().getSearchTitle());
     }
 }

@@ -18,9 +18,8 @@ package org.gophie2.ui.tk.search;
 
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import org.gophie2.config.ConfigFile;
+import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigurationManager;
-import static org.gophie2.ui.tk.search.SearchPanel.SEARCH_BACKGROUND;
 
 /**
  *
@@ -28,7 +27,6 @@ import static org.gophie2.ui.tk.search.SearchPanel.SEARCH_BACKGROUND;
  */
 public class SearchTextField extends JTextField {
 
-    private static final String SEARCH_TEXTCOLOR = "#e8e8e8";
     private static final long serialVersionUID = -370287179587150041L;
 
     public SearchTextField() {
@@ -37,11 +35,12 @@ public class SearchTextField extends JTextField {
     }
 
     private void init() {
-        ConfigFile configFile = ConfigurationManager.getConfigFile();
+        ColorPalette colors = ConfigurationManager.getColors();
+
         setBorder(new EmptyBorder(2, 0, 0, 0));
-        setBackground(configFile.getColor("Appearance", "SEARCH_BACKGROUND", SEARCH_BACKGROUND));
-        setForeground(configFile.getColor("Appearance", "SEARCH_TEXTCOLOR", SEARCH_TEXTCOLOR));
-        setCaretColor(configFile.getColor("Appearance", "SEARCH_TEXTCOLOR", SEARCH_TEXTCOLOR));
+        setBackground(colors.getSearchBackground());
+        setForeground(colors.getSearchText());
+        setCaretColor(colors.getSearchText());
         setFont(ConfigurationManager.getDefaultFont(14f));
     }
 }
