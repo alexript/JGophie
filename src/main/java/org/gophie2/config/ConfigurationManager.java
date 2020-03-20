@@ -17,9 +17,6 @@
  */
 package org.gophie2.config;
 
-import javax.swing.ImageIcon;
-import org.gophie2.Gophie;
-
 public class ConfigurationManager {
 
     private static ConfigFile configFile;
