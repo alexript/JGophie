@@ -14,22 +14,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gophie2.ui.tk.buttons;
+package org.gophie2.ui.tk.download;
 
-import org.gophie2.ui.tk.buttons.internal.ActionButton;
-import org.gophie2.ui.tk.buttons.internal.ActionButtonEventListener;
+import org.gophie2.net.DownloadItem;
+import org.gophie2.ui.tk.buttons.ActionButton;
+import org.gophie2.ui.tk.buttons.ActionButtonEventListener;
 
 /**
  *
  * @author malyshev
  */
-public class AbortButton extends ActionButton {
+public class MainButton extends ActionButton {
 
     private static final long serialVersionUID = -4411521271507688614L;
 
-    public AbortButton(ActionButtonEventListener listener) {
+    public MainButton(ActionButtonEventListener listener) {
         super("", "Abort");
+        init(listener);
+    }
+
+    protected void applyStatus(DownloadItem.DownloadStatus status) {
+        switch (status) {
+            case ACTIVE:
+                setContent("", "Abort");
+                break;
+            case FAILED:
+                setContent("", "Retry");
+                break;
+            case COMPLETED:
+                setContent("", "Open");
+                break;
+            case IDLE:
+                setContent("", "Start");
+                break;
+        }
+    }
+
+    private void init(ActionButtonEventListener listener) {
         setButtonId(0);
+        setVisible(false);
         addEventListener(listener);
     }
 }

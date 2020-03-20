@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gophie2.ui.tk.buttons;
+package org.gophie2.ui.tk.download;
 
-import org.gophie2.ui.tk.buttons.internal.ActionButton;
-import org.gophie2.ui.tk.buttons.internal.ActionButtonEventListener;
+import org.gophie2.ui.tk.buttons.ActionButton;
+import org.gophie2.ui.tk.buttons.ActionButtonEventListener;
 
 /**
  *

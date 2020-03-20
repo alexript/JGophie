@@ -14,30 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gophie2.ui.tk.buttons.internal;
+package org.gophie2.ui.tk.buttons;
 
 import javax.swing.JLabel;
+import javax.swing.border.EmptyBorder;
 import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigurationManager;
-import org.gophie2.fonts.DefaultFont;
+import org.gophie2.fonts.IconFont;
 
 /**
  *
  * @author malyshev
  */
-public class ButtonText extends JLabel {
+public class ButtonIcon extends JLabel {
 
-    private static final long serialVersionUID = -148338465972679385L;
+    private static final long serialVersionUID = 5563587044347970205L;
 
-    public ButtonText(String text) {
-        super(text);
+    public ButtonIcon(String icoText) {
+        super(icoText);
         init();
     }
 
     private void init() {
         ColorPalette colors = ConfigurationManager.getColors();
+
+        setBorder(new EmptyBorder(0, 0, 0, 6));
         setOpaque(false);
-        setFont(new DefaultFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "ACTION_TEXT_SIZE", 12f)));
+        setFont(new IconFont(ConfigurationManager.getConfigFile().getFloat("Fonts", "ACTION_ICONS_SIZE", 14f)));
+
         setForeground(colors.getActionbarInactive());
     }
 }

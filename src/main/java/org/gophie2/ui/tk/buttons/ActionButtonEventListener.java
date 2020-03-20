@@ -15,7 +15,7 @@
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
  */
-package org.gophie2.ui.tk.buttons.internal;
+package org.gophie2.ui.tk.buttons;
 
 public interface ActionButtonEventListener {
 

@@ -17,6 +17,7 @@
  */
 package org.gophie2.ui;
 
+import org.gophie2.ui.tk.download.DownloadWindow;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Desktop;

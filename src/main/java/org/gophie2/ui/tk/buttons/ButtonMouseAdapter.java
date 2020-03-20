@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gophie2.ui.tk.buttons.internal;
+package org.gophie2.ui.tk.buttons;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
