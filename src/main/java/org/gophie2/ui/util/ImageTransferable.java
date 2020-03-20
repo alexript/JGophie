@@ -14,31 +14,34 @@
     You should have received a copy of the GNU General Public License
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
-*/
-
+ */
 package org.gophie2.ui.util;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.io.IOException;
 
-public class ImageTransferable implements Transferable{
-    private Image image;
+public class ImageTransferable implements Transferable {
 
-    public ImageTransferable(Image image){
+    private final Image image;
+
+    public ImageTransferable(Image image) {
         this.image = image;
     }
 
-    public DataFlavor[] getTransferDataFlavors(){
-        return new DataFlavor[] { DataFlavor.imageFlavor };
+    @Override
+    public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[]{DataFlavor.imageFlavor};
     }
 
-    public boolean isDataFlavorSupported(DataFlavor flavor){
+    @Override
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
         return DataFlavor.imageFlavor.equals(flavor);
     }
 
+    @Override
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-        if (!DataFlavor.imageFlavor.equals(flavor)){
+        if (!DataFlavor.imageFlavor.equals(flavor)) {
             throw new UnsupportedFlavorException(flavor);
         }
         return image;

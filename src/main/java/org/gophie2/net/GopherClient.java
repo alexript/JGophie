@@ -14,8 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
-*/
-
+ */
 package org.gophie2.net;
 
 import java.io.*;
@@ -30,6 +29,7 @@ import org.gophie2.net.event.GopherClientEventListener;
 import org.gophie2.net.event.GopherError;
 
 public class GopherClient {
+
     /* thread with the active fetch process */
     private Thread thread;
     private Boolean cancelled = false;
@@ -37,97 +37,86 @@ public class GopherClient {
     /**
      * Cancels a current fetch operation
      */
-    public void cancelFetch(){
-        if(this.thread != null){
+    public void cancelFetch() {
+        if (this.thread != null) {
             this.thread.interrupt();
             this.cancelled = true;
         }
     }
 
     /**
-     * Returns whether the current
-     * operation was cancelled or not
+     * Returns whether the current operation was cancelled or not
      *
-     * @return
-     * true when cancelled, false otherwise
+     * @return true when cancelled, false otherwise
      */
-    public Boolean isCancelled(){
+    public Boolean isCancelled() {
         return this.cancelled;
     }
 
     /**
-     * Downloads content through gopher and
-     * stores it in the define target file
+     * Downloads content through gopher and stores it in the define target file
      *
-     * @param url
-     * Url to download the content from
+     * @param url Url to download the content from
      *
-     * @param targetFile
-     * The file to write the content to
+     * @param targetFile The file to write the content to
      *
-     * @param eventListener
-     * Listener to report the status to
+     * @param eventListener Listener to report the status to
      */
-    public void downloadAsync(String url, String targetFile, GopherClientEventListener eventListener){
+    public void downloadAsync(String url, String targetFile, GopherClientEventListener eventListener) {
         /* instanciate the new thread */
         GopherClient clientObject = this;
-        this.thread = new Thread(new Runnable() {
-            public void run() {
-                try{
-                    /* create the output file stream to write to */
-                    OutputStream fileStream = new FileOutputStream(new File(targetFile));
+        this.thread = new Thread(() -> {
+            try {
 
-                    /* parse the url and instanciate the client */
+                try (OutputStream fileStream = new FileOutputStream(new File(targetFile))) {
+
                     GopherUrl gopherUrl = new GopherUrl(url);
-                    Socket gopherSocket = new Socket(gopherUrl.getHost(), gopherUrl.getPort());
-                    byte[] gopherRequest = (gopherUrl.getSelector() + "\r\n").getBytes(StandardCharsets.US_ASCII);
-                    (new DataOutputStream(gopherSocket.getOutputStream())).write(gopherRequest);
+                    try (Socket gopherSocket = new Socket(gopherUrl.getHost(), gopherUrl.getPort())) {
+                        byte[] gopherRequest = (gopherUrl.getSelector() + "\r\n").getBytes(StandardCharsets.US_ASCII);
+                        (new DataOutputStream(gopherSocket.getOutputStream())).write(gopherRequest);
+                        /* read byte in chunks and report progress */
+                        int read;
+                        InputStream socketStream = gopherSocket.getInputStream();
+                        byte[] data = new byte[16384];
+                        long totalByteCount = 0;
+                        /* read byte by byte to be able to report progress */
+                        while ((read = socketStream.read(data, 0, data.length)) != -1) {
+                            fileStream.write(data, 0, read);
 
-                    /* read byte in chunks and report progress */
-                    int read;
-                    InputStream socketStream = gopherSocket.getInputStream();
-                    byte[] data = new byte[16384];
-                    long totalByteCount = 0;
+                            /* calculate total bytes read */
+                            totalByteCount = totalByteCount + data.length;
 
-                    /* read byte by byte to be able to report progress */
-                    while ((read = socketStream.read(data, 0, data.length)) != -1) {
-                        fileStream.write(data, 0, read);
-
-                        /* calculate total bytes read */
-                        totalByteCount = totalByteCount + data.length;
-
-                        /* report byte count to listener */
-                        if(!clientObject.isCancelled()){
-                            if(eventListener != null){
-                                eventListener.progress(gopherUrl, totalByteCount);
+                            /* report byte count to listener */
+                            if (!clientObject.isCancelled()) {
+                                if (eventListener != null) {
+                                    eventListener.progress(gopherUrl, totalByteCount);
+                                }
                             }
                         }
+                        /* close the socket to the server */
+ /* close the file stream */
                     }
+                }
 
-                    /* close the socket to the server */
-                    gopherSocket.close();
-
-                    /* close the file stream */
-                    fileStream.close();
-
-                    if(!clientObject.isCancelled()){
-                        if (eventListener != null) {
-                            eventListener.pageLoaded(null);
-                        }
+                if (!clientObject.isCancelled()) {
+                    if (eventListener != null) {
+                        eventListener.pageLoaded(null);
                     }
-                }catch(Exception ex){
-                    /* log the exception message */
-                    System.out.println("Download failed (" + url + "):" + ex.getMessage());
+                }
+            } catch (IOException ex) {
+                /* log the exception message */
+                System.out.println("Download failed (" + url + "):" + ex.getMessage());
 
-                    /* remove the file if already created */
-                    File createdFile = new File(targetFile);
-                    if(createdFile.exists()){ createdFile.delete(); }
+                /* remove the file if already created */
+                File createdFile = new File(targetFile);
+                if (createdFile.exists()) {
+                    createdFile.delete();
+                }
 
-                    /* notify the handlers */
-                    if(!clientObject.isCancelled()){
-                        if (eventListener != null) {
-                            eventListener.pageLoadFailed(GopherError.EXCEPTION,new GopherUrl(url));
-                        }
+                /* notify the handlers */
+                if (!clientObject.isCancelled()) {
+                    if (eventListener != null) {
+                        eventListener.pageLoadFailed(GopherError.EXCEPTION, new GopherUrl(url));
                     }
                 }
             }
@@ -140,33 +129,28 @@ public class GopherClient {
     /**
      * Fetches a gopher page asynchronously
      *
-     * @param url
-     * the url of the gopher page to fetch
+     * @param url the url of the gopher page to fetch
      *
-     * @param contentType
-     * the expected content type of the url
+     * @param contentType the expected content type of the url
      *
-     * @param eventListener
-     * the listener to report the result to
+     * @param eventListener the listener to report the result to
      */
-    public void fetchAsync(String url, GopherItemType contentType, GopherClientEventListener eventListener){
+    public void fetchAsync(String url, GopherItemType contentType, GopherClientEventListener eventListener) {
         /* instanciate the new thread */
         GopherClient clientObject = this;
-        this.thread = new Thread(new Runnable() {
-            public void run() {
-                try{
-                    GopherPage resultPage = fetch(url, contentType, eventListener);
+        this.thread = new Thread(() -> {
+            try {
+                GopherPage resultPage = fetch(url, contentType, eventListener);
 
-                    if(!clientObject.isCancelled()){
-                        if (eventListener != null) {
-                            eventListener.pageLoaded(resultPage);
-                        }
+                if (!clientObject.isCancelled()) {
+                    if (eventListener != null) {
+                        eventListener.pageLoaded(resultPage);
                     }
-                }catch(GopherNetworkException ex){
-                    if(!clientObject.isCancelled()){
-                        if (eventListener != null) {
-                            eventListener.pageLoadFailed(ex.getGopherErrorType(),new GopherUrl(url));
-                        }
+                }
+            } catch (GopherNetworkException ex) {
+                if (!clientObject.isCancelled()) {
+                    if (eventListener != null) {
+                        eventListener.pageLoadFailed(ex.getGopherErrorType(), new GopherUrl(url));
                     }
                 }
             }
@@ -179,70 +163,62 @@ public class GopherClient {
     /**
      * Fetches a gopher page
      *
-     * @param url
-     * the url of the page to fetch
+     * @param url the url of the page to fetch
      *
-     * @param contentType
-     * the expected content type
+     * @param contentType the expected content type
      *
-     * @param eventListener
-     * event listener to report progress to
+     * @param eventListener event listener to report progress to
      *
-     * @return
-     * the fetched gopher page object
+     * @return the fetched gopher page object
      *
-     * @throws GopherNetworkException
-     * Exception with network information
+     * @throws GopherNetworkException Exception with network information
      */
     public GopherPage fetch(String url, GopherItemType contentType, GopherClientEventListener eventListener) throws GopherNetworkException {
         GopherPage result = null;
 
-        try{
+        try {
             /* string result with content */
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             /* parse the url and instanciate the client */
             GopherUrl gopherUrl = new GopherUrl(url);
-            Socket gopherSocket = new Socket(gopherUrl.getHost(), gopherUrl.getPort());
-            byte[] gopherRequest = (gopherUrl.getSelector() + "\r\n").getBytes(StandardCharsets.US_ASCII);
-            (new DataOutputStream(gopherSocket.getOutputStream())).write(gopherRequest);
+            try (Socket gopherSocket = new Socket(gopherUrl.getHost(), gopherUrl.getPort())) {
+                byte[] gopherRequest = (gopherUrl.getSelector() + "\r\n").getBytes(StandardCharsets.US_ASCII);
+                (new DataOutputStream(gopherSocket.getOutputStream())).write(gopherRequest);
+                /* read byte in chunks and report progress */
+                int read;
+                InputStream socketStream = gopherSocket.getInputStream();
+                byte[] data = new byte[16384];
+                long totalByteCount = 0;
+                /* read byte by byte to be able to report progress */
+                while ((read = socketStream.read(data, 0, data.length)) != -1) {
+                    buffer.write(data, 0, read);
 
-            /* read byte in chunks and report progress */
-            int read;
-            InputStream socketStream = gopherSocket.getInputStream();
-            byte[] data = new byte[16384];
-            long totalByteCount = 0;
+                    /* calculate total bytes read */
+                    totalByteCount = totalByteCount + data.length;
 
-            /* read byte by byte to be able to report progress */
-            while ((read = socketStream.read(data, 0, data.length)) != -1) {
-                buffer.write(data, 0, read);
-
-                /* calculate total bytes read */
-                totalByteCount = totalByteCount + data.length;
-
-                /* report byte count to listener */
-                if(!this.isCancelled()){
-                    if(eventListener != null){
-                        eventListener.progress(gopherUrl, totalByteCount);
+                    /* report byte count to listener */
+                    if (!this.isCancelled()) {
+                        if (eventListener != null) {
+                            eventListener.progress(gopherUrl, totalByteCount);
+                        }
                     }
                 }
+                /* close the socket to the server */
             }
-
-            /* close the socket to the server */
-            gopherSocket.close();
 
             /* set the result page */
             result = new GopherPage(buffer.toByteArray(), contentType, gopherUrl);
-        }catch(ConnectException ex){
+        } catch (ConnectException ex) {
             /* handle host connection errors */
             throw new GopherNetworkException(GopherError.CONNECT_FAILED, ex.getMessage());
-        }catch(UnknownHostException ex){
+        } catch (UnknownHostException ex) {
             /* handle host not found exception */
             throw new GopherNetworkException(GopherError.HOST_UNKNOWN, ex.getMessage());
-        }catch(SocketTimeoutException ex){
+        } catch (SocketTimeoutException ex) {
             /* handle host not found exception */
             throw new GopherNetworkException(GopherError.CONNECTION_TIMEOUT, ex.getMessage());
-        }catch(Exception ex){
+        } catch (IOException ex) {
             /* handle the error properly and raise and event */
             System.out.println("GOPHER NETWORK EXCEPTION: " + ex.getMessage());
             throw new GopherNetworkException(GopherError.EXCEPTION, ex.getMessage());

@@ -14,16 +14,19 @@
     You should have received a copy of the GNU General Public License
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
-*/
-
+ */
 package org.gophie2.ui.event;
 
 import org.gophie2.net.GopherItem;
 import org.gophie2.net.GopherPage;
 
 public interface PageMenuEventListener {
+
     void setHomeGopherRequested(String url);
+
     void itemDownloadRequested(GopherItem item);
+
     void pageSaveRequested(GopherPage page);
+
     void selectAllTextRequested();
 }

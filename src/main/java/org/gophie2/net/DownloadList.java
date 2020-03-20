@@ -14,44 +14,47 @@
     You should have received a copy of the GNU General Public License
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
-*/
-
+ */
 package org.gophie2.net;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.gophie2.net.DownloadItem.DownloadStatus;
 import org.gophie2.net.event.DownloadItemEventListener;
 import org.gophie2.net.event.DownloadListEventListener;
 
 public class DownloadList extends ArrayList<DownloadItem> implements DownloadItemEventListener {
-    private static final long serialVersionUID = 1L;
 
+    private static final long serialVersionUID = 1L;
     /* event listeners for list updated */
-    private ArrayList<DownloadListEventListener> eventListener = new ArrayList<DownloadListEventListener>();
+    private final List<DownloadListEventListener> eventListener;
+
+    public DownloadList() {
+        this.eventListener = new ArrayList<>();
+    }
 
     /**
      * Returns all items as an array
-     * 
-     * @return
-     * All download items as an array
+     *
+     * @return All download items as an array
      */
-    public DownloadItem[] getDownloadItemArray(){
+    public DownloadItem[] getDownloadItemArray() {
         DownloadItem[] result = new DownloadItem[this.size()];
 
         /* create the list upside down with the latest first */
-        for(int i=this.size()-1; i>=0; i--){
-            result[(this.size()-1)-i] = this.get(i);
+        for (int i = this.size() - 1; i >= 0; i--) {
+            result[(this.size() - 1) - i] = this.get(i);
         }
 
         return result;
     }
 
-    public Boolean hasNonActiveItems(){
+    public Boolean hasNonActiveItems() {
         Boolean result = false;
 
-        for(DownloadItem item: this){
-            if(item.getStatus() != DownloadStatus.ACTIVE){
+        for (DownloadItem item : this) {
+            if (item.getStatus() != DownloadStatus.ACTIVE) {
                 result = true;
             }
         }
@@ -59,47 +62,45 @@ public class DownloadList extends ArrayList<DownloadItem> implements DownloadIte
         return result;
     }
 
-    public void clearNonActiveItems(){
+    public void clearNonActiveItems() {
         ArrayList<DownloadItem> currentList = this;
         this.clear();
 
-        for(DownloadItem item: currentList){
-            if(item.getStatus() == DownloadStatus.ACTIVE){
-                this.add(item);
-            }
-        }
+        currentList.stream().filter((item) -> (item.getStatus() == DownloadStatus.ACTIVE)).forEachOrdered((item) -> {
+            this.add(item);
+        });
 
         this.notifyUpdate();
     }
 
-    public void addEventListener(DownloadListEventListener listener){
+    public void addEventListener(DownloadListEventListener listener) {
         this.eventListener.add(listener);
     }
 
-    private void notifyUpdate(){
-        for(DownloadListEventListener listener: this.eventListener){
+    private void notifyUpdate() {
+        this.eventListener.forEach((listener) -> {
             listener.downloadListUpdated();
-        }
+        });
     }
 
     @Override
-    public boolean add(DownloadItem e){
+    public boolean add(DownloadItem e) {
         boolean result = super.add(e);
         e.addEventListener(this);
-        this.notifyUpdate();        
+        this.notifyUpdate();
         return result;
     }
 
     @Override
-    public void clear(){
+    public void clear() {
         super.clear();
-        this.notifyUpdate();   
+        this.notifyUpdate();
     }
 
     @Override
     public void downloadProgressReported() {
-        for(DownloadListEventListener listener: this.eventListener){
+        this.eventListener.forEach((listener) -> {
             listener.downloadProgressReported();
-        }       
+        });
     }
 }

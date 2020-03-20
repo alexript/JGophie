@@ -14,8 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
-*/
-
+ */
 package org.gophie2.ui.event;
 
 import org.gophie2.net.GopherItem;
@@ -23,13 +22,20 @@ import org.gophie2.net.GopherItem;
 /*
     Listener for the events raised by the
     navigation bar ui element.
-*/
+ */
 public interface NavigationInputListener {
+
     void addressRequested(String addressText, GopherItem item);
+
     void homeGopherRequested();
+
     void backwardRequested();
+
     void forwardRequested();
+
     void refreshRequested();
+
     void stopRequested();
+
     void showDownloadRequested();
 }

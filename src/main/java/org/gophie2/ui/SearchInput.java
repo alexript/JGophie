@@ -14,8 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
-*/
-
+ */
 package org.gophie2.ui;
 
 import java.awt.*;
@@ -28,6 +27,7 @@ import org.gophie2.config.ConfigurationManager;
 import org.gophie2.ui.event.SearchInputListener;
 
 public class SearchInput extends JPanel {
+
     /* constants */
     private static final long serialVersionUID = 1L;
 
@@ -39,40 +39,34 @@ public class SearchInput extends JPanel {
     JLabel searchTitle;
     JTextField searchText;
 
-    public SearchInput(){
+    public SearchInput() {
         /* get the config file */
         ConfigFile configFile = ConfigurationManager.getConfigFile();
 
-        this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
-        this.setBorder(new EmptyBorder(6,12,12,14));
-        this.setBackground(Color.decode(configFile.getSetting
-                ("SEARCH_BACKGROUND", "Appearance", SEARCH_BACKGROUND)));
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        this.setBorder(new EmptyBorder(6, 12, 12, 14));
+        this.setBackground(Color.decode(configFile.getSetting("SEARCH_BACKGROUND", "Appearance", SEARCH_BACKGROUND)));
 
         this.searchIcon = new JLabel("");
         this.searchIcon.setFont(ConfigurationManager.getIconFont(16f));
-        this.searchIcon.setBorder(new EmptyBorder(0,0,0,8));
-        this.searchIcon.setForeground(Color.decode(configFile.getSetting
-                ("SEARCH_TITLECOLOR", "Appearance", SEARCH_TITLECOLOR)));
+        this.searchIcon.setBorder(new EmptyBorder(0, 0, 0, 8));
+        this.searchIcon.setForeground(Color.decode(configFile.getSetting("SEARCH_TITLECOLOR", "Appearance", SEARCH_TITLECOLOR)));
 
         this.add(this.searchIcon);
 
         this.searchTitle = new JLabel("Search");
-        this.searchTitle.setForeground(Color.decode(configFile.getSetting
-                ("SEARCH_TITLECOLOR", "Appearance", SEARCH_TITLECOLOR)));
+        this.searchTitle.setForeground(Color.decode(configFile.getSetting("SEARCH_TITLECOLOR", "Appearance", SEARCH_TITLECOLOR)));
 
-        this.searchTitle.setBorder(new EmptyBorder(2,0,0,12));
+        this.searchTitle.setBorder(new EmptyBorder(2, 0, 0, 12));
         this.add(this.searchTitle);
 
         this.searchText = new JTextField();
-        this.searchText.setBorder(new EmptyBorder(2,0,0,0));
-        this.searchText.setBackground(Color.decode(configFile.getSetting
-                ("SEARCH_BACKGROUND", "Appearance", SEARCH_BACKGROUND)));
+        this.searchText.setBorder(new EmptyBorder(2, 0, 0, 0));
+        this.searchText.setBackground(Color.decode(configFile.getSetting("SEARCH_BACKGROUND", "Appearance", SEARCH_BACKGROUND)));
 
-        this.searchText.setForeground(Color.decode(configFile.getSetting
-                ("SEARCH_TEXTCOLOR", "Appearance", SEARCH_TEXTCOLOR)));
+        this.searchText.setForeground(Color.decode(configFile.getSetting("SEARCH_TEXTCOLOR", "Appearance", SEARCH_TEXTCOLOR)));
 
-        this.searchText.setCaretColor(Color.decode(configFile.getSetting
-                ("SEARCH_TEXTCOLOR", "Appearance", SEARCH_TEXTCOLOR)));
+        this.searchText.setCaretColor(Color.decode(configFile.getSetting("SEARCH_TEXTCOLOR", "Appearance", SEARCH_TEXTCOLOR)));
 
         this.searchText.setFont(ConfigurationManager.getDefaultFont(14f));
         this.add(this.searchText);
@@ -80,17 +74,18 @@ public class SearchInput extends JPanel {
         this.setVisible(false);
     }
 
-    public void performSearch(String title, SearchInputListener listener){
+    public void performSearch(String title, SearchInputListener listener) {
         this.searchTitle.setText(title);
         this.searchTitle.setFont(ConfigurationManager.getDefaultFont(14f));
         this.searchText.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyReleased(KeyEvent e) {
                 /* execute search when the ENTER key is pressed */
-                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     JTextField textField = (JTextField) e.getSource();
 
                     /* only execute search when text is not empty */
-                    if(textField.getText().length() > 0){
+                    if (textField.getText().length() > 0) {
                         listener.searchRequested(textField.getText());
                     }
 
@@ -98,7 +93,7 @@ public class SearchInput extends JPanel {
                 }
 
                 /* just cancel when the user hit ESC */
-                if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     setVisible(false);
                 }
             }

@@ -14,15 +14,17 @@
     You should have received a copy of the GNU General Public License
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
-*/
-
+ */
 package org.gophie2.net.event;
 
 import org.gophie2.net.GopherPage;
 import org.gophie2.net.GopherUrl;
 
 public interface GopherClientEventListener {
+
     void progress(GopherUrl url, long byteCount);
+
     void pageLoaded(GopherPage result);
+
     void pageLoadFailed(GopherError error, GopherUrl url);
 }

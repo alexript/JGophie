@@ -14,8 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
-*/
-
+ */
 package org.gophie2.ui;
 
 import java.awt.*;
@@ -23,6 +22,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -44,19 +44,20 @@ import org.gophie2.ui.event.PageMenuEventListener;
 /**
  * The PageView component renders GopherPage objects
  */
-public class PageView extends JScrollPane{
+public class PageView extends JScrollPane {
+
     /* constants */
     private static final long serialVersionUID = 1L;
 
     /* local variables and objects */
     private PageMenu pageMenu;
     private JEditorPane viewPane;
-    private JEditorPane headerPane;
-    private HTMLEditorKit editorKit;
+    private final JEditorPane headerPane;
+    private final HTMLEditorKit editorKit;
     private StyleSheet styleSheet;
-    private Font textFont;
+    private final Font textFont;
     private String viewTextColor = "#ffffff";
-    private String selectionColor = "#cf9a0c";
+    private final String selectionColor = "#cf9a0c";
 
     /* the config file with all settings */
     private ConfigFile configFile;
@@ -69,21 +70,20 @@ public class PageView extends JScrollPane{
 
     /**
      * Adds a new navigation listener for any navigation events
-     * @param listener
-     * The listener that responds to navigation events
+     *
+     * @param listener The listener that responds to navigation events
      */
-    public void addListener(NavigationInputListener listener){
+    public void addListener(NavigationInputListener listener) {
         this.inputListenerList.add(listener);
     }
 
     /**
-     * Instead of displaying a gopher page, it displays content
-     * as plain text in the view page section of this component
+     * Instead of displaying a gopher page, it displays content as plain text in
+     * the view page section of this component
      *
-     * @param content
-     * GopherPage with respective content
+     * @param content GopherPage with respective content
      */
-    public void showGopherContent(GopherPage content){
+    public void showGopherContent(GopherPage content) {
         /* reset the header to just show nothing */
         this.headerPane.setText("");
 
@@ -91,46 +91,47 @@ public class PageView extends JScrollPane{
         this.pageMenu.setCurrentPage(content);
 
         /* check the type of content supplied */
-        if(content.getContentType() == GopherItemType.IMAGE_FILE
-            || content.getContentType() == GopherItemType.GIF_FILE){
+        if (content.getContentType() == GopherItemType.IMAGE_FILE
+                || content.getContentType() == GopherItemType.GIF_FILE) {
             /* try to display as an image */
-            try{
+            try {
                 /* try to identify the file extension */
                 String imageFileExt = ".jpg";
-                if(content.getContentType() == GopherItemType.GIF_FILE){
+                if (content.getContentType() == GopherItemType.GIF_FILE) {
                     imageFileExt = ".gif";
                 }
 
                 /* try to determine the filetype from the url */
                 String imageUrl = content.getUrl().getUrlString();
-                if(imageUrl.substring(imageUrl.length()-4).equals(".")){
-                    imageFileExt = imageUrl.substring(imageUrl.length()-3);
-                }if(imageUrl.substring(imageUrl.length()-5).equals(".")){
-                    imageFileExt = imageUrl.substring(imageUrl.length()-4);
+                if (imageUrl.substring(imageUrl.length() - 4).equals(".")) {
+                    imageFileExt = imageUrl.substring(imageUrl.length() - 3);
+                }
+                if (imageUrl.substring(imageUrl.length() - 5).equals(".")) {
+                    imageFileExt = imageUrl.substring(imageUrl.length() - 4);
                 }
 
                 /* write the image content to file */
                 File tempImageFile = File.createTempFile("gopherimagefile", imageFileExt);
-                FileOutputStream outputStream = new FileOutputStream(tempImageFile);
-                outputStream.write(content.getByteArray());
-                outputStream.close();
+                try (FileOutputStream outputStream = new FileOutputStream(tempImageFile)) {
+                    outputStream.write(content.getByteArray());
+                }
 
                 /* determine image size and rescale */
                 String imageHtmlCode = "<img src=\"" + tempImageFile.toURI()
-                                        .toURL().toExternalForm() + "\" />";
+                        .toURL().toExternalForm() + "\" />";
 
-                try{
+                try {
                     BufferedImage bufferedImage = ImageIO.read(tempImageFile);
                     int width = bufferedImage.getWidth();
                     int height = bufferedImage.getHeight();
-                    if(width > 800){
+                    if (width > 800) {
                         height = (height / (width / 800));
                         imageHtmlCode = "<img src=\"" + tempImageFile.toURI()
-                                        .toURL().toExternalForm() + "\" "
-                                        + "width=\"800\" height=" + height + "\""
-                                        + "/>";
+                                .toURL().toExternalForm() + "\" "
+                                + "width=\"800\" height=" + height + "\""
+                                + "/>";
                     }
-                }catch(Exception ex){
+                } catch (IOException ex) {
                     /* failed to determine image size */
                     System.out.println("Failed to determine image size: " + ex.getMessage());
                 }
@@ -138,12 +139,12 @@ public class PageView extends JScrollPane{
                 /* display content as an image */
                 this.viewPane.setContentType("text/html");
                 this.viewPane.setText(imageHtmlCode);
-            }catch(Exception ex){
+            } catch (IOException ex) {
                 /* display exception cause as text inside the view */
                 this.viewPane.setContentType("text/plain");
                 this.viewPane.setText("Failed to display the image:\n" + ex.getMessage());
             }
-        }else{
+        } else {
             /* display content as plain text */
             this.viewPane.setContentType("text/plain");
             this.viewPane.setText(content.getSourceCode().replace("\n.\r\n", ""));
@@ -153,10 +154,9 @@ public class PageView extends JScrollPane{
     /**
      * Initialises rendering of a GopherPage on this view
      *
-     * @param page
-     * The GopherPage to display on this view
+     * @param page The GopherPage to display on this view
      */
-    public void showGopherPage(GopherPage page){
+    public void showGopherPage(GopherPage page) {
         /* set the current local gopher page */
         this.currentPage = page;
 
@@ -168,19 +168,19 @@ public class PageView extends JScrollPane{
         String renderedContent = "<table cellspacing=\"0\" cellpadding=\"2\">";
 
         int lineNumber = 1;
-        for(GopherItem item : page.getItemList()){
+        for (GopherItem item : page.getItemList()) {
             /* set the content for the row header */
             renderedHeader += "<tr><td class=\"lineNumber\">" + lineNumber + "</td>"
-                           + "<td><div class=\"itemIcon\">"
-                           + this.getGopherItemTypeIcon(item.getItemTypeCode())
-                           + "</div></td></tr>";
+                    + "<td><div class=\"itemIcon\">"
+                    + this.getGopherItemTypeIcon(item.getItemTypeCode())
+                    + "</div></td></tr>";
 
             /* set the content for the text view */
             String itemTitle = item.getUserDisplayString().replace(" ", "&nbsp;");
             String itemCode = "<span class=\"text\">" + itemTitle + "</span>";
 
             /* build links for anything other than infromation items */
-            if(!item.getItemTypeCode().equals("i")){
+            if (!item.getItemTypeCode().equals("i")) {
                 /* create the link for this item */
                 itemCode = "<a href=\"" + item.getUrlString() + "\">" + itemTitle + "</a>";
             }
@@ -193,11 +193,11 @@ public class PageView extends JScrollPane{
 
         /* set content type and add content to view */
         this.viewPane.setContentType("text/html");
-        this.viewPane.setText(renderedContent+"</table>");
+        this.viewPane.setText(renderedContent + "</table>");
 
         /* set content type and add content to header */
         this.headerPane.setContentType("text/html");
-        this.headerPane.setText(renderedHeader+"</table>");
+        this.headerPane.setText(renderedHeader + "</table>");
 
         /* scroll the view pane to the top */
         this.viewPane.setCaretPosition(0);
@@ -206,7 +206,7 @@ public class PageView extends JScrollPane{
     /**
      * Configures the style of the view
      */
-    private void configureStyle(){
+    private void configureStyle() {
         /* get the color schemes from the config file */
         String linkColor = this.configFile.getSetting("PAGE_LINK_COLOR", "Appearance", "#22c75c");
         String lineNumberColor = this.configFile.getSetting("PAGE_LINENUMBER_COLOR", "Appearance", "#454545");
@@ -224,19 +224,18 @@ public class PageView extends JScrollPane{
     /**
      * Constructs the PageView component object
      *
-     * @param textColor
-     * The color of the text to display
+     * @param parent
+     * @param textColor The color of the text to display
      *
-     * @param backgroundColor
-     * The background color of the viewer
+     * @param backgroundColor The background color of the viewer
      *
      */
-    public PageView(MainWindow parent, String textColor, String backgroundColor){
+    public PageView(MainWindow parent, String textColor, String backgroundColor) {
         /* get the config file to fetch the settings */
         this.configFile = ConfigurationManager.getConfigFile();
 
         /* instanciate input listener list */
-        this.inputListenerList = new ArrayList<NavigationInputListener>();
+        this.inputListenerList = new ArrayList<>();
 
         /* create the editor kit instance */
         this.editorKit = new HTMLEditorKit();
@@ -246,11 +245,10 @@ public class PageView extends JScrollPane{
         this.viewPane.setEditable(false);
         this.viewPane.setBackground(Color.decode(backgroundColor));
         this.viewPane.setForeground(Color.decode(textColor));
-        this.viewPane.setBorder(new EmptyBorder(10,4,8,16));
+        this.viewPane.setBorder(new EmptyBorder(10, 4, 8, 16));
         this.viewPane.setEditorKit(this.editorKit);
         this.viewPane.setCursor(new Cursor(Cursor.TEXT_CURSOR));
-        this.viewPane.setSelectionColor(Color.decode(this.configFile.getSetting
-                    ("PAGE_SELECTION_COLOR", "Appearance", this.selectionColor)));
+        this.viewPane.setSelectionColor(Color.decode(this.configFile.getSetting("PAGE_SELECTION_COLOR", "Appearance", this.selectionColor)));
 
         this.viewPane.setDragEnabled(false);
         this.getViewport().add(this.viewPane);
@@ -267,7 +265,7 @@ public class PageView extends JScrollPane{
         this.headerPane.setEditable(false);
         this.headerPane.setBackground(Color.decode(backgroundColor));
         this.headerPane.setForeground(Color.decode(textColor));
-        this.headerPane.setBorder(new EmptyBorder(10,12,8,2));
+        this.headerPane.setBorder(new EmptyBorder(10, 12, 8, 2));
         this.headerPane.setEditorKit(this.editorKit);
         this.headerPane.setDragEnabled(false);
         this.setRowHeaderView(this.headerPane);
@@ -277,62 +275,59 @@ public class PageView extends JScrollPane{
 
         /* create the page menu and attach the popup trigger */
         this.pageMenu = new PageMenu();
-        this.pageMenu.addPageMenuEventListener((PageMenuEventListener)parent);
+        this.pageMenu.addPageMenuEventListener((PageMenuEventListener) parent);
         this.viewPane.add(this.pageMenu);
-        this.viewPane.addMouseListener(new MouseAdapter(){
+        this.viewPane.addMouseListener(new MouseAdapter() {
             /* handle the popup trigger for this document */
-            public void mouseReleased(MouseEvent evt){
+            public void mouseReleased(MouseEvent evt) {
                 /* get the trigger button for the menu from config
                     (right mouse button id is usually #3) */
-                int menuTriggerButtonId = Integer.parseInt(configFile.getSetting
-                                ("MENU_MOUSE_TRIGGERBUTTON", "Navigation", "3"));
-                if(evt.getButton() == menuTriggerButtonId){
+                int menuTriggerButtonId = Integer.parseInt(configFile.getSetting("MENU_MOUSE_TRIGGERBUTTON", "Navigation", "3"));
+                if (evt.getButton() == menuTriggerButtonId) {
                     /* trigger hit, show the page menu and also
                         make sure to pass the text selection before */
                     pageMenu.setSelectedText(viewPane.getSelectedText());
 
                     /* show the menu */
                     pageMenu.show(viewPane,
-                            (int)evt.getPoint().getX(),
-                            (int)evt.getPoint().getY());
+                            (int) evt.getPoint().getX(),
+                            (int) evt.getPoint().getY());
                 }
             }
         });
 
         /* report any links hits as address request to the listeners */
-        this.viewPane.addHyperlinkListener(new HyperlinkListener() {
-            public void hyperlinkUpdate(HyperlinkEvent e) {
-                /* get the url of that link */
-                String urlValue = e.getDescription();
+        this.viewPane.addHyperlinkListener((HyperlinkEvent e) -> {
+            /* get the url of that link */
+            String urlValue = e.getDescription();
 
-                /* determine the content type of the link target */
-                GopherItem itemObject = null;
-                if(currentPage != null){
-                    /* determine the content type of the gopher item
-                        by the definition of it in the gopher menu */
-                    for(GopherItem contentItem : currentPage.getItemList()){
-                        if(contentItem.getUrlString().equals(urlValue)){
-                            itemObject = contentItem;
-                        }
+            /* determine the content type of the link target */
+            GopherItem itemObject = null;
+            if (currentPage != null) {
+                /* determine the content type of the gopher item
+                by the definition of it in the gopher menu */
+                for (GopherItem contentItem : currentPage.getItemList()) {
+                    if (contentItem.getUrlString().equals(urlValue)) {
+                        itemObject = contentItem;
                     }
                 }
+            }
 
-                /* pass the active link item to the popup menu */
-                if(e.getEventType() == HyperlinkEvent.EventType.ENTERED){
-                    pageMenu.setLinkTarget(itemObject);
-                }
+            /* pass the active link item to the popup menu */
+            if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+                pageMenu.setLinkTarget(itemObject);
+            }
 
-                /* reset the link target for the popup menu */
-                if(e.getEventType() == HyperlinkEvent.EventType.EXITED){
-                    pageMenu.setLinkTarget(null);
-                }
+            /* reset the link target for the popup menu */
+            if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+                pageMenu.setLinkTarget(null);
+            }
 
-                /* handle link activation (aka left-click) */
-                if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    /* execute the handler */
-                    for (NavigationInputListener inputListener : inputListenerList){
-                        inputListener.addressRequested(urlValue,itemObject);
-                    }
+            /* handle link activation (aka left-click) */
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                /* execute the handler */
+                for (NavigationInputListener inputListener : inputListenerList) {
+                    inputListener.addressRequested(urlValue, itemObject);
                 }
             }
         });
@@ -353,7 +348,7 @@ public class PageView extends JScrollPane{
     /**
      * Selects all the items in the view
      */
-    public void selectAllText(){
+    public void selectAllText() {
         /* just pass it onto the view */
         this.viewPane.selectAll();
         this.viewPane.requestFocus();
@@ -362,33 +357,67 @@ public class PageView extends JScrollPane{
     /**
      * Returns the header icon for the gopher item type
      *
-     * @param code
-     * Code for the gopher item type
+     * @param code Code for the gopher item type
      *
-     * @return
-     * String with the icon for the item
+     * @return String with the icon for the item
      */
-    public String getGopherItemTypeIcon(String code){
+    public String getGopherItemTypeIcon(String code) {
         String result = "";
 
-        if(code.equals("0")){ result = ""; }
-        if(code.equals("1")){ result =  ""; }
-        if(code.equals("2")){ result =  ""; }
-        if(code.equals("3")){ result =  ""; }
-        if(code.equals("4")){ result =  "";}
-        if(code.equals("5")){ result =  ""; }
-        if(code.equals("6")){ result =  ""; }
-        if(code.equals("7")){ result =  ""; }
-        if(code.equals("8")){ result =  ""; }
-        if(code.equals("9")){ result =  ""; }
-        if(code.equals("+")){ result =  ""; }
-        if(code.equals("g")){ result =  ""; }
-        if(code.equals("I")){ result =  ""; }
-        if(code.equals("T")){ result =  ""; }
-        if(code.equals("h")){ result =  ""; }
-        if(code.equals("i")){ result =  ""; }
-        if(code.equals("s")){ result =  ""; }
-        if(code.equals("?")){ result =  ""; }
+        if (code.equals("0")) {
+            result = "";
+        }
+        if (code.equals("1")) {
+            result = "";
+        }
+        if (code.equals("2")) {
+            result = "";
+        }
+        if (code.equals("3")) {
+            result = "";
+        }
+        if (code.equals("4")) {
+            result = "";
+        }
+        if (code.equals("5")) {
+            result = "";
+        }
+        if (code.equals("6")) {
+            result = "";
+        }
+        if (code.equals("7")) {
+            result = "";
+        }
+        if (code.equals("8")) {
+            result = "";
+        }
+        if (code.equals("9")) {
+            result = "";
+        }
+        if (code.equals("+")) {
+            result = "";
+        }
+        if (code.equals("g")) {
+            result = "";
+        }
+        if (code.equals("I")) {
+            result = "";
+        }
+        if (code.equals("T")) {
+            result = "";
+        }
+        if (code.equals("h")) {
+            result = "";
+        }
+        if (code.equals("i")) {
+            result = "";
+        }
+        if (code.equals("s")) {
+            result = "";
+        }
+        if (code.equals("?")) {
+            result = "";
+        }
 
         return result;
     }

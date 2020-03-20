@@ -75,7 +75,7 @@ public class ConfigurationManager {
             result = Font.createFont(Font.TRUETYPE_FONT, Gophie.class.getResourceAsStream(fileName)).deriveFont(size);
             GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
             graphicsEnvironment.registerFont(result);
-        } catch (Exception ex) {
+        } catch (FontFormatException | IOException ex) {
             /* Ouchie, this will look bad... */
             System.out.println("Unable to load font: " + ex.getMessage());
         }

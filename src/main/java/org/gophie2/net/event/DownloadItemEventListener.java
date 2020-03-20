@@ -14,10 +14,10 @@
     You should have received a copy of the GNU General Public License
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
-*/
-
+ */
 package org.gophie2.net.event;
 
-public interface DownloadItemEventListener{
+public interface DownloadItemEventListener {
+
     void downloadProgressReported();
 }
