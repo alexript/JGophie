@@ -15,11 +15,11 @@
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
  */
-package org.gophie2.config;
+package org.gophie2.view;
 
-public class SystemUtility {
+public class DataSizeView {
 
-    public static String getFileSizeString(float byteSize) {
+    public static String get(float byteSize) {
         String result = byteSize + " Byte";
 
         if (byteSize > 1000) {

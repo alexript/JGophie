@@ -126,7 +126,7 @@ public class GopherPage {
     public String getSourceCode() {
         try {
             return new String(this.sourceCode, ConfigurationManager.getConfigFile()
-                    .getSetting("DEFAULT_CHARSET", "Network", GOPHERPAGE_DEFAULT_CHARSET));
+                    .get("Network", "DEFAULT_CHARSET", GOPHERPAGE_DEFAULT_CHARSET));
         } catch (UnsupportedEncodingException ex) {
             /* drop a quick info on the console when decoding fails */
             System.out.println("Failed to decode bytes of Gopher Page: " + ex.getMessage());

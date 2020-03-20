@@ -12,7 +12,13 @@
     </properties>
 
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.nikhaldimann</groupId>
+            <artifactId>inieditor</artifactId>
+            <version>r6</version>
+        </dependency>
+    </dependencies>
 
 
     <build>
@@ -60,7 +66,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
 
             <plugin>
                 <groupId>org.jacoco</groupId>

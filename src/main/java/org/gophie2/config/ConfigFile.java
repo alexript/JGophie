@@ -1,191 +1,148 @@
 /*
-    This file is part of Gophie.
-
-    Gophie is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Gophie is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Gophie. If not, see <https://www.gnu.org/licenses/>.
-
+ * Copyright (C) 2020 malyshev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.gophie2.config;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import com.nikhaldimann.inieditor.IniEditor;
+import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.gophie2.Gophie;
 
 /**
- * This class parses *.INI configuration files as defined in:
- * https://en.wikipedia.org/wiki/INI_file
+ *
+ * @author malyshev
  */
-public class ConfigFile {
+public class ConfigFile extends IniEditor {
 
-    /* full file name of this config file */
-    private String fileName = "";
+    private static final String CONFIG_FOLDERNAME = ".gophie2";
+    private static final String CONFIG_FILENAME = "config.ini";
 
-    /* hashmap with sections and settings */
-    HashMap<String, HashMap<String, String>> config;
-
-    /**
-     * Creates a new instance of an *.INI config file
-     *
-     * @param configFileName the full file name of the config file
-     */
-    public ConfigFile(String configFileName) {
-        this.config = new HashMap<>();
-        this.fileName = configFileName;
-        this.parse();
+    protected ConfigFile() {
+        super(true);
+        init();
     }
 
     /**
-     * Gets a setting from the config map
+     * Returns the configuration directory's path
      *
-     * @param name Name of the setting
-     *
-     * @param section Section the setting is in
-     *
-     * @param defaultValue Default value to return
-     *
-     * @return Returns the setting value or the default value if the setting or
-     * its section is not present
+     * @return The full path to the configuration directory
      */
-    public String getSetting(String name, String section, String defaultValue) {
-        String result = defaultValue;
-
-        if (this.config.containsKey(section)) {
-            if (this.config.get(section).containsKey(name)) {
-                result = this.config.get(section).get(name);
-            }
-        }
-
+    private static String getConfigPath() {
+        /* define the full path of the configuration directory */
+        String result = System.getProperty("user.home") + "/" + CONFIG_FOLDERNAME + "/";
+        File folder = new File(result);
+        folder.mkdirs();
         return result;
     }
 
-    /**
-     * Adds a setting to the current config map
-     *
-     * @param name Name of the setting
-     *
-     * @param value Value of the setting
-     *
-     * @param section Name of the section
-     */
-    public void setSetting(String name, String value, String section) {
-        /* avoid adding empty values to the config map */
-        if (section.length() > 0 && name.length() > 0 && value.length() > 0) {
-            /* create a new hashmap with settings for this section */
-            HashMap<String, String> settingMap = new HashMap<>();
+    private void init() {
+        String configPath = getConfigPath();
+        File file = new File(configPath, CONFIG_FILENAME);
 
-            if (this.config.containsKey(section)) {
-                /* get the current setting map for this section */
-                settingMap = this.config.get(section);
-            }
-
-            /* put name and value to the setting map */
-            settingMap.put(name, value);
-            this.config.put(section, settingMap);
-        }
-    }
-
-    /**
-     * Create the ini file text content to be written into the ini file
-     *
-     * @return The text content of the ini file as string
-     */
-    private String getTextContent() {
-        String result = "";
-
-        /* iterate through the hash map and build the ini file content */
-        Iterator<Entry<String, HashMap<String, String>>> iterator = this.config.entrySet().iterator();
-        while (iterator.hasNext()) {
-            /* get the current entry */
-            Entry<String, HashMap<String, String>> pair = (Entry<String, HashMap<String, String>>) iterator.next();
-
-            /* set the section header first */
-            if (result.length() > 0) {
-                result += "\n";
-            }
-            result += "[" + pair.getKey() + "]\n";
-
-            /* iterate through all the settings values */
-            Iterator<Entry<String, String>> settingIterator = pair.getValue().entrySet().iterator();
-            while (settingIterator.hasNext()) {
-                /* get the current setting for this section */
-                Entry<String, String> settingEntry = settingIterator.next();
-                result += settingEntry.getKey() + " = " + settingEntry.getValue() + "\n";
+        if (file.exists()) {
+            try {
+                load(file);
+                return;
+            } catch (IOException ex) {
+                Logger.getLogger(ConfigFile.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
-        return result;
-    }
-
-    /**
-     * Saves this config ini file to disk
-     */
-    public void save() {
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(this.fileName))) {
-            writer.write(this.getTextContent());
-
-        } catch (Exception ex) {
-            System.out.println("Failed to write config file: " + ex.getMessage());
-        }
-    }
-
-    /**
-     * Parse the configuration file
-     */
-    private void parse() {
         try {
-            /* make sure that config file exists */
-            if (Files.exists(Paths.get(this.fileName))) {
-                /* read all lines from the defined file */
-                List<String> lineList = Files.readAllLines(Paths.get(this.fileName), Charset.defaultCharset());
-
-                /* go through each line */
-                String configSection = "NONE";
-                for (String line : lineList) {
-                    /* check the type of line */
-                    String value = line.trim();
-                    if (value.length() > 0) {
-                        /* ignore comments */
-                        if (!value.startsWith(";")) {
-                            /* check if this is a section */
-                            if (value.startsWith("[") == true && value.endsWith("]")) {
-                                /* this is a section, track it to assign values */
-                                configSection = value.substring(1, value.length() - 1);
-                            }
-
-                            /* check if this is a value assignment */
-                            if (value.indexOf("=") > 0) {
-                                String[] setting = value.split("=");
-                                if (setting.length == 2) {
-                                    /* apply the setting to the config */
-                                    this.setSetting(setting[0].trim(), setting[1].trim(), configSection);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            load(Gophie.class.getResourceAsStream(CONFIG_FILENAME));
+            save();
         } catch (IOException ex) {
-            /* failed to parse config file */
-            System.out.println("Failed to open and parse file ("
-                    + this.fileName + "): " + ex.getMessage());
+            Logger.getLogger(ConfigFile.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @Override
+    public String get(String section, String option) {
+        String val = super.get(section, option);
+        if (val == null) {
+            return null;
+        }
+        String[] split = val.split(";", 2);
+        return split[0];
+    }
+
+    @Override
+    public void set(String section, String option, String value) {
+        if (!hasSection(section)) {
+            addSection(section);
+        }
+        super.set(section, option, value);
+    }
+
+    public void save() {
+        String configPath = getConfigPath();
+        File file = new File(configPath, CONFIG_FILENAME);
+        try {
+            save(file);
+        } catch (IOException ex) {
+            Logger.getLogger(ConfigFile.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public String get(String section, String option, String defaultValue) {
+        String v = get(section, option);
+        if (v == null) {
+            return defaultValue;
+        }
+        return v;
+    }
+
+    public int getInt(String section, String option) {
+        return getInt(section, option, 0);
+    }
+
+    public int getInt(String section, String option, int defaultValue) {
+        String v = get(section, option);
+        if (v == null) {
+            return defaultValue;
+        }
+        return Integer.parseInt(v.trim());
+    }
+
+    public boolean getBool(String section, String option) {
+        return getBool(section, option, false);
+    }
+
+    public boolean getBool(String section, String option, boolean defaultValue) {
+        String v = get(section, option);
+        if (v == null) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(v.trim());
+    }
+
+    public Color getColor(String section, String option) {
+        return getColor(section, option, "#000000");
+    }
+
+    public Color getColor(String section, String option, String defaultValue) {
+        String v = get(section, option);
+        if (v == null) {
+            v = defaultValue;
+        }
+        return Color.decode(v);
+    }
+
 }

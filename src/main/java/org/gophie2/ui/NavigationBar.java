@@ -34,8 +34,8 @@ public class NavigationBar extends JPanel {
     private static final long serialVersionUID = 1L;
 
     /* static variables */
-    static String textColorHex;
-    static String textHoverColorHex;
+    static Color textColorHex;
+    static Color textHoverColorHex;
     private final String selectionColor = "#ffffff";
 
     /* local variables and objects */
@@ -61,7 +61,7 @@ public class NavigationBar extends JPanel {
         @textColor          Color of the text and icons
         @textHoverColor     Color of the text and icons on hover
      */
-    public NavigationBar(String backgroundColor, String textColor, String textHoverColor) {
+    public NavigationBar(Color backgroundColor, Color textColor, Color textHoverColor) {
         this.inputListenerList = new ArrayList<>();
 
         /* get the config file for color scheme */
@@ -99,7 +99,7 @@ public class NavigationBar extends JPanel {
             public void mouseEntered(MouseEvent evt) {
                 if (allowNavigateBack == true) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
-                    backButton.setForeground(Color.decode(NavigationBar.textHoverColorHex));
+                    backButton.setForeground(NavigationBar.textHoverColorHex);
                 }
             }
 
@@ -107,7 +107,7 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                backButton.setForeground(Color.decode(NavigationBar.textColorHex));
+                backButton.setForeground(NavigationBar.textColorHex);
             }
         });
 
@@ -129,7 +129,7 @@ public class NavigationBar extends JPanel {
             public void mouseEntered(MouseEvent evt) {
                 if (allowNavigateForward == true) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
-                    forwardButton.setForeground(Color.decode(NavigationBar.textHoverColorHex));
+                    forwardButton.setForeground(NavigationBar.textHoverColorHex);
                 }
             }
 
@@ -137,7 +137,7 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                forwardButton.setForeground(Color.decode(NavigationBar.textColorHex));
+                forwardButton.setForeground(NavigationBar.textColorHex);
             }
         });
 
@@ -166,14 +166,14 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseEntered(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
-                refreshButton.setForeground(Color.decode(NavigationBar.textHoverColorHex));
+                refreshButton.setForeground(NavigationBar.textHoverColorHex);
             }
 
             /* revert back to the default cursor and default color */
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                refreshButton.setForeground(Color.decode(NavigationBar.textColorHex));
+                refreshButton.setForeground(NavigationBar.textColorHex);
             }
         });
 
@@ -193,21 +193,21 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseEntered(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
-                homeButton.setForeground(Color.decode(NavigationBar.textHoverColorHex));
+                homeButton.setForeground(NavigationBar.textHoverColorHex);
             }
 
             /* revert back to the default cursor and default color */
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                homeButton.setForeground(Color.decode(NavigationBar.textColorHex));
+                homeButton.setForeground(NavigationBar.textColorHex);
             }
         });
 
         /* create the address input */
         this.addressInput = this.createAddressInput();
-        this.addressInput.setSelectionColor(Color.decode(configFile.getSetting("NAVIGATIONBAR_SELECTION_COLOR", "Appearance", this.selectionColor)));
-        this.addressInput.setCaretColor(Color.decode(NavigationBar.textColorHex));
+        this.addressInput.setSelectionColor(configFile.getColor("Appearance", "NAVIGATIONBAR_SELECTION_COLOR", this.selectionColor));
+        this.addressInput.setCaretColor(NavigationBar.textColorHex);
 
         /* create the download button and handle it */
         this.downloadButton = this.createButton("");
@@ -224,14 +224,14 @@ public class NavigationBar extends JPanel {
             @Override
             public void mouseEntered(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
-                downloadButton.setForeground(Color.decode(NavigationBar.textHoverColorHex));
+                downloadButton.setForeground(NavigationBar.textHoverColorHex);
             }
 
             /* revert back to the default cursor and default color */
             @Override
             public void mouseExited(MouseEvent evt) {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                downloadButton.setForeground(Color.decode(NavigationBar.textColorHex));
+                downloadButton.setForeground(NavigationBar.textColorHex);
             }
         });
 
@@ -304,7 +304,7 @@ public class NavigationBar extends JPanel {
         JTextField inputField = new JTextField();
         inputField.setBorder(new EmptyBorder(4, 10, 6, 4));
         inputField.setFont(ConfigurationManager.getDefaultFont(14f));
-        inputField.setForeground(Color.decode(NavigationBar.textColorHex));
+        inputField.setForeground(NavigationBar.textColorHex);
         inputField.setOpaque(false);
         this.add(inputField);
 
@@ -331,7 +331,7 @@ public class NavigationBar extends JPanel {
 
         /* set the icon font */
         button.setFont(this.iconFont);
-        button.setForeground(Color.decode(NavigationBar.textColorHex));
+        button.setForeground(NavigationBar.textColorHex);
 
         /* set the border properly to give some space */
         button.setBorder(new EmptyBorder(0, 8, 0, 8));
@@ -347,7 +347,7 @@ public class NavigationBar extends JPanel {
 
         @colorHex       the hex code for the background color
      */
-    public void setBackgroundColor(String colorHex) {
-        this.setBackground(Color.decode(colorHex));
+    public void setBackgroundColor(Color colorHex) {
+        this.setBackground(colorHex);
     }
 }

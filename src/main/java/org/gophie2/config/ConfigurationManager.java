@@ -25,8 +25,6 @@ import org.gophie2.Gophie;
 public class ConfigurationManager {
 
     private static ConfigFile configFile;
-    private static final String MAIN_CONFIG_FILENAME = "config.ini";
-    private static final String CONFIG_FOLDERNAME = "Gophie";
 
     /**
      * Returns the main configuration file
@@ -35,27 +33,10 @@ public class ConfigurationManager {
      */
     public static ConfigFile getConfigFile() {
         if (ConfigurationManager.configFile == null) {
-            String configFileName = ConfigurationManager.getConfigPath() + MAIN_CONFIG_FILENAME;
-            ConfigurationManager.configFile = new ConfigFile(configFileName);
+            ConfigurationManager.configFile = new ConfigFile();
         }
 
         return ConfigurationManager.configFile;
-    }
-
-    /**
-     * Returns the configuration directory's path
-     *
-     * @return The full path to the configuration directory
-     */
-    public static String getConfigPath() {
-        /* define the full path of the configuration directory */
-        String result = System.getProperty("user.home") + "/" + CONFIG_FOLDERNAME + "/";
-
-        /* make sure all the directories exist */
-        File mainConfigFile = new File(result + MAIN_CONFIG_FILENAME);
-        mainConfigFile.getParentFile().mkdirs();
-
-        return result;
     }
 
     /**
@@ -106,7 +87,6 @@ public class ConfigurationManager {
 
         try {
             /* try to open the font for icon display */
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             result = new ImageIcon(Gophie.class.getResource(name));
         } catch (Exception ex) {
             /* Ouchie, this will look bad... */

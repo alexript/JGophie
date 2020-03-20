@@ -17,7 +17,14 @@
  */
 package org.gophie2.ui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Toolkit;
+import org.gophie2.ui.tk.search.SearchPanel;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,7 +35,7 @@ import javax.swing.*;
 /* import application config classes */
 import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
-import org.gophie2.config.SystemUtility;
+import org.gophie2.view.DataSizeView;
 import org.gophie2.net.DownloadItem;
 import org.gophie2.net.DownloadList;
 import org.gophie2.net.GopherClient;
@@ -38,10 +45,8 @@ import org.gophie2.net.GopherPage;
 import org.gophie2.net.GopherUrl;
 import org.gophie2.net.event.GopherClientEventListener;
 import org.gophie2.net.event.GopherError;
-import org.gophie2.ui.event.MessageViewListener;
 import org.gophie2.ui.event.NavigationInputListener;
 import org.gophie2.ui.event.PageMenuEventListener;
-import org.gophie2.ui.event.SearchInputListener;
 
 public class MainWindow implements NavigationInputListener, GopherClientEventListener, PageMenuEventListener {
 
@@ -68,7 +73,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
     private final NavigationBar navigationBar;
     private final JPanel headerBar;
     private final MessageView messageView;
-    private final SearchInput searchInput;
+    private final SearchPanel searchInput;
     private final DownloadWindow downloadWindow;
 
     /**
@@ -99,14 +104,14 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
         /* create the navigation bar */
         this.navigationBar = new NavigationBar(
                 /* get the appearance configuration from the config file */
-                configFile.getSetting("NAVIGATIONBAR_BACKGROUND", "Appearance", NAVIGATIONBAR_BACKGROUND),
-                configFile.getSetting("NAVIGATIONBAR_TEXTCOLOR", "Appearance", NAVIGATIONBAR_TEXTCOLOR),
-                configFile.getSetting("NAVIGATIONBAR_TEXTHOVERCOLOR", "Appearance", NAVIGATIONBAR_TEXTHOVERCOLOR)
+                configFile.getColor("Appearance", "NAVIGATIONBAR_BACKGROUND", NAVIGATIONBAR_BACKGROUND),
+                configFile.getColor("Appearance", "NAVIGATIONBAR_TEXTCOLOR", NAVIGATIONBAR_TEXTCOLOR),
+                configFile.getColor("Appearance", "NAVIGATIONBAR_TEXTHOVERCOLOR", NAVIGATIONBAR_TEXTHOVERCOLOR)
         );
 
         /* set the gopher home as defined in the config
             or use the default one if none is defined */
-        String gopherHome = configFile.getSetting("GOPHERHOME", "Navigation", DEFAULT_GOPHERHOME);
+        String gopherHome = configFile.get("Navigation", "GOPHERHOME", DEFAULT_GOPHERHOME);
         this.navigationBar.setAddressText(gopherHome);
 
         /* attach listener to navigation bar */
@@ -118,7 +123,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
         this.headerBar.setLayout(new BoxLayout(this.headerBar, BoxLayout.Y_AXIS));
         this.messageView = new MessageView();
         this.headerBar.add(this.messageView);
-        this.searchInput = new SearchInput();
+        this.searchInput = new SearchPanel();
         this.headerBar.add(this.searchInput);
 
         /* set the content pane */
@@ -528,7 +533,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
     public void pageLoaded(GopherPage result) {
         /* set the window title to the url of this page */
         this.frame.setTitle(result.getUrl().getUrlString()
-                + " (" + SystemUtility.getFileSizeString(result.getByteArray().length) + ")"
+                + " (" + DataSizeView.get(result.getByteArray().length) + ")"
                 + " - " + APPLICATION_TITLE);
 
         /* update the address text with the loaded page */
@@ -599,7 +604,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
     public void progress(GopherUrl url, long byteCount) {
         /* report the download size in the title bar */
         this.frame.setTitle(url.getUrlString()
-                + " (" + SystemUtility.getFileSizeString(byteCount) + ")"
+                + " (" + DataSizeView.get(byteCount) + ")"
                 + " - " + APPLICATION_TITLE);
     }
 
@@ -624,7 +629,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
     public void setHomeGopherRequested(String url) {
         /* set the gopher home to the config file */
         ConfigFile configFile = ConfigurationManager.getConfigFile();
-        configFile.setSetting("GOPHERHOME", url, "Navigation");
+        configFile.set("Navigation", "GOPHERHOME", url);
         configFile.save();
     }
 
@@ -672,7 +677,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
     @Override
     public void homeGopherRequested() {
         ConfigFile configFile = ConfigurationManager.getConfigFile();
-        String homeGopherUrl = configFile.getSetting("GOPHERHOME", "Navigation", DEFAULT_GOPHERHOME);
+        String homeGopherUrl = configFile.get("Navigation", "GOPHERHOME", DEFAULT_GOPHERHOME);
         this.fetchGopherContent(homeGopherUrl, GopherItemType.GOPHERMENU);
         this.navigationBar.setAddressText(homeGopherUrl);
     }

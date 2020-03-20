@@ -4,7 +4,6 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.net.DownloadItem;
@@ -60,7 +59,7 @@ public class DownloadWindow implements ActionButtonEventListener {
         this.fileListView.setCellRenderer(new DownloadItemRenderer());
         this.fileListView.setFixedCellWidth(this.fileListView.getWidth());
         this.fileListView.setOpaque(true);
-        this.fileListView.setBackground(Color.decode(configFile.getSetting("FILELIST_BACKGROUND", "Appearance", FILELIST_BACKGROUND)));
+        this.fileListView.setBackground(configFile.getColor("Appearance", "FILELIST_BACKGROUND", FILELIST_BACKGROUND));
 
         JScrollPane listScrollPane = new JScrollPane(this.fileListView);
         listScrollPane.setOpaque(false);
@@ -68,23 +67,23 @@ public class DownloadWindow implements ActionButtonEventListener {
         this.frame.add(listScrollPane, BorderLayout.CENTER);
 
         this.clearButton = new ActionButton("", "Clear List",
-                configFile.getSetting("ACTIONBAR_TEXTCOLOR", "Appearance", ACTIONBAR_TEXTCOLOR),
-                configFile.getSetting("ACTIONBAR_INACTIVE_TEXTCOLOR", "Appearance", ACTIONBAR_INACTIVE_TEXTCOLOR)
+                configFile.getColor("Appearance", "ACTIONBAR_TEXTCOLOR", ACTIONBAR_TEXTCOLOR),
+                configFile.getColor("Appearance", "ACTIONBAR_INACTIVE_TEXTCOLOR", ACTIONBAR_INACTIVE_TEXTCOLOR)
         );
         this.clearButton.setButtonEnabled(false);
         this.clearButton.setButtonId(1);
         this.clearButton.addEventListener(this);
 
         this.actionButton = new ActionButton("", "Abort",
-                configFile.getSetting("ACTIONBAR_TEXTCOLOR", "Appearance", ACTIONBAR_TEXTCOLOR),
-                configFile.getSetting("ACTIONBAR_INACTIVE_TEXTCOLOR", "Appearance", ACTIONBAR_INACTIVE_TEXTCOLOR)
+                configFile.getColor("Appearance", "ACTIONBAR_TEXTCOLOR", ACTIONBAR_TEXTCOLOR),
+                configFile.getColor("Appearance", "ACTIONBAR_INACTIVE_TEXTCOLOR", ACTIONBAR_INACTIVE_TEXTCOLOR)
         );
         this.actionButton.setButtonId(0);
         this.actionButton.addEventListener(this);
 
         this.actionBar.setLayout(new BorderLayout());
         this.actionBar.setBorder(new EmptyBorder(8, 16, 10, 16));
-        this.actionBar.setBackground(Color.decode(configFile.getSetting("ACTIONBAR_BACKGROUND", "Appearance", ACTIONBAR_BACKGROUND)));
+        this.actionBar.setBackground(configFile.getColor("Appearance", "ACTIONBAR_BACKGROUND", ACTIONBAR_BACKGROUND));
         this.actionBar.add(this.clearButton, BorderLayout.EAST);
         this.actionBar.add(this.actionButton, BorderLayout.WEST);
         this.frame.add(this.actionBar, BorderLayout.SOUTH);

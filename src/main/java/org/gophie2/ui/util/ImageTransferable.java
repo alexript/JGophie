@@ -17,8 +17,11 @@
  */
 package org.gophie2.ui.util;
 
-import java.awt.*;
-import java.awt.datatransfer.*;
+import java.awt.Image;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+
 import java.io.IOException;
 
 public class ImageTransferable implements Transferable {

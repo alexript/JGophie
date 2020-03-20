@@ -32,8 +32,8 @@ public class ActionButton extends JPanel {
 
     /* private variables */
     private int buttonId = 0;
-    private String inactiveTextColor = "";
-    private String textColor = "";
+    private Color inactiveTextColor;
+    private Color textColor;
     private Boolean isEnabledButton = false;
     private ArrayList<ActionButtonEventListener> eventListenerList;
 
@@ -41,7 +41,7 @@ public class ActionButton extends JPanel {
     private JLabel iconLabel;
     private JLabel textLabel;
 
-    public ActionButton(String iconText, String text, String textColorHex, String inactiveTextColorHex) {
+    public ActionButton(String iconText, String text, Color textColorHex, Color inactiveTextColorHex) {
         /* construct the base */
         super();
         this.eventListenerList = new ArrayList<>();
@@ -60,14 +60,14 @@ public class ActionButton extends JPanel {
         this.iconLabel.setBorder(new EmptyBorder(0, 0, 0, 6));
         this.iconLabel.setOpaque(false);
         this.iconLabel.setFont(ConfigurationManager.getIconFont(14f));
-        this.iconLabel.setForeground(Color.decode(inactiveTextColorHex));
+        this.iconLabel.setForeground(inactiveTextColorHex);
         this.add(iconLabel, BorderLayout.WEST);
 
         /* text for the button using the default text font */
         this.textLabel = new JLabel(text);
         this.textLabel.setOpaque(false);
         this.textLabel.setFont(ConfigurationManager.getDefaultFont(12f));
-        this.textLabel.setForeground(Color.decode(inactiveTextColorHex));
+        this.textLabel.setForeground(inactiveTextColorHex);
         this.add(textLabel, BorderLayout.EAST);
 
         this.addMouseListener(new MouseAdapter() {
@@ -85,16 +85,16 @@ public class ActionButton extends JPanel {
             public void mouseEntered(MouseEvent evt) {
                 /* only show hover effect when button is enabled */
                 if (isButtonEnabled() == true) {
-                    iconLabel.setForeground(Color.decode(textColor));
-                    textLabel.setForeground(Color.decode(textColor));
+                    iconLabel.setForeground(textColor);
+                    textLabel.setForeground(textColor);
                 }
             }
 
             /* revert back to the default cursor and default color */
             @Override
             public void mouseExited(MouseEvent evt) {
-                iconLabel.setForeground(Color.decode(inactiveTextColor));
-                textLabel.setForeground(Color.decode(inactiveTextColor));
+                iconLabel.setForeground(inactiveTextColor);
+                textLabel.setForeground(inactiveTextColor);
             }
         });
     }
@@ -117,7 +117,7 @@ public class ActionButton extends JPanel {
         this.textLabel.setText(text);
     }
 
-    public void setTextColor(String colorHex) {
+    public void setTextColor(Color colorHex) {
         this.textColor = colorHex;
     }
 
@@ -126,7 +126,7 @@ public class ActionButton extends JPanel {
      *
      * @param colorHex The color in hex format
      */
-    public void setInactiveTextColor(String colorHex) {
+    public void setInactiveTextColor(Color colorHex) {
         this.inactiveTextColor = colorHex;
     }
 

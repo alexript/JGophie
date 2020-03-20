@@ -208,8 +208,8 @@ public class PageView extends JScrollPane {
      */
     private void configureStyle() {
         /* get the color schemes from the config file */
-        String linkColor = this.configFile.getSetting("PAGE_LINK_COLOR", "Appearance", "#22c75c");
-        String lineNumberColor = this.configFile.getSetting("PAGE_LINENUMBER_COLOR", "Appearance", "#454545");
+        String linkColor = this.configFile.get("Appearance", "PAGE_LINK_COLOR", "#22c75c");
+        String lineNumberColor = this.configFile.get("Appearance", "PAGE_LINENUMBER_COLOR", "#454545");
 
         /* build up the stylesheet for the rendering */
         this.styleSheet = this.editorKit.getStyleSheet();
@@ -248,7 +248,7 @@ public class PageView extends JScrollPane {
         this.viewPane.setBorder(new EmptyBorder(10, 4, 8, 16));
         this.viewPane.setEditorKit(this.editorKit);
         this.viewPane.setCursor(new Cursor(Cursor.TEXT_CURSOR));
-        this.viewPane.setSelectionColor(Color.decode(this.configFile.getSetting("PAGE_SELECTION_COLOR", "Appearance", this.selectionColor)));
+        this.viewPane.setSelectionColor(configFile.getColor("Appearance", "PAGE_SELECTION_COLOR", this.selectionColor));
 
         this.viewPane.setDragEnabled(false);
         this.getViewport().add(this.viewPane);
@@ -282,7 +282,8 @@ public class PageView extends JScrollPane {
             public void mouseReleased(MouseEvent evt) {
                 /* get the trigger button for the menu from config
                     (right mouse button id is usually #3) */
-                int menuTriggerButtonId = Integer.parseInt(configFile.getSetting("MENU_MOUSE_TRIGGERBUTTON", "Navigation", "3"));
+                int menuTriggerButtonId = configFile.getInt("Navigation", "MENU_MOUSE_TRIGGERBUTTON", 3);
+
                 if (evt.getButton() == menuTriggerButtonId) {
                     /* trigger hit, show the page menu and also
                         make sure to pass the text selection before */

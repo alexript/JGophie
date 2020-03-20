@@ -22,7 +22,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
-import org.gophie2.config.SystemUtility;
+import org.gophie2.view.DataSizeView;
 import org.gophie2.net.DownloadItem;
 
 import org.gophie2.net.DownloadItem.DownloadStatus;
@@ -50,7 +50,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
         /* highlight if this element is selected */
         if (isSelected == true) {
             this.setOpaque(true);
-            this.setBackground(Color.decode(configFile.getSetting("DOWNLOAD_SELECTED_COLOR", "Appearance", "#cf9a0c")));
+            this.setBackground(configFile.getColor("Appearance", "DOWNLOAD_SELECTED_COLOR", "#cf9a0c"));
         }
 
         /* get the gopher item of this download */
@@ -60,11 +60,11 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
         this.titleLabel.setText(item.getFileName());
         Font titleFont = ConfigurationManager.getConsoleFont(15f);
         this.titleLabel.setFont(titleFont.deriveFont(titleFont.getStyle() | Font.BOLD));
-        this.titleLabel.setForeground(Color.decode(configFile.getSetting("DOWNLOAD_TITLE_COLOR", "Appearance", "#ffffff")));
+        this.titleLabel.setForeground(configFile.getColor("Appearance", "DOWNLOAD_TITLE_COLOR", "#ffffff"));
 
         /* create the information text based on the status */
         String statusText = "Download not started";
-        String byteLoadedText = SystemUtility.getFileSizeString(value.getByteCountLoaded());
+        String byteLoadedText = DataSizeView.get(value.getByteCountLoaded());
 
         /* show message for completed downloads */
         if (value.getStatus() == DownloadStatus.COMPLETED) {
@@ -73,7 +73,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
 
         /* show message for active downloads */
         if (value.getStatus() == DownloadStatus.ACTIVE) {
-            String transferRate = SystemUtility.getFileSizeString(value.getBytePerSecond());
+            String transferRate = DataSizeView.get(value.getBytePerSecond());
             statusText = byteLoadedText + " (" + transferRate + "/sec)";
         }
 
@@ -88,7 +88,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
         /* set the text to the status text label */
         this.textLabel.setText(statusText);
         this.textLabel.setBorder(new EmptyBorder(4, 0, 0, 0));
-        this.textLabel.setForeground(Color.decode(configFile.getSetting("DOWNLOAD_TEXT_COLOR", "Appearance", "#e0e0e0")));
+        this.textLabel.setForeground(configFile.getColor("Appearance", "DOWNLOAD_TEXT_COLOR", "#e0e0e0"));
         Font textFont = ConfigurationManager.getConsoleFont(13f);
         this.textLabel.setFont(textFont);
 
