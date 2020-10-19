@@ -20,15 +20,11 @@ package org.gophie2.ui;
 import org.gophie2.ui.tk.download.DownloadWindow;
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Toolkit;
 import org.gophie2.ui.tk.search.SearchPanel;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BoxLayout;
@@ -50,6 +46,7 @@ import org.gophie2.ui.event.NavigationInputListener;
 import org.gophie2.ui.event.PageMenuEventAdapter;
 import org.gophie2.ui.event.PageMenuEventListener;
 import org.gophie2.ui.tk.download.ConfirmDownload;
+import org.gophie2.ui.tk.requesters.EmailRequester;
 import org.gophie2.ui.tk.requesters.GopherRequester;
 import org.gophie2.ui.tk.requesters.Requester;
 import org.gophie2.ui.tk.requesters.TelnetRequester;
@@ -230,13 +227,11 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         if (item.getItemType().isBinary()) {
             /* binary files are handled by the download manager */
             requester = requesterConfirmDownload;
-            requester.request(messageView, addressText, item);
         } else {
             /* this is not a binary file, try to handle and render */
             switch (item.getItemType()) {
                 case FULLTEXT_SEARCH:
                     requester = searchInput;
-                    requester.request(messageView, addressText, item);
                     break;
                 case CCSCO_NAMESERVER:
                     /* CCSO is not part of the Gopher protocol, but its very own
@@ -247,17 +242,14 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
                         than Gopher servers out there. Hence, Gophie allows the
                         user to use CCSO servers throgh their Telnet client. */
                     requester = new TelnetRequester();
-                    requester.request(messageView, addressText, item);
                     break;
                 case TELNET:
                     /* handle telnet session requests */
                     requester = new TelnetRequester();
-                    requester.request(messageView, addressText, item);
                     break;
                 case TELNET3270:
                     /* handle telnet 3270 session requests */
                     requester = new TelnetRequester();
-                    requester.request(messageView, addressText, item);
                     break;
                 default:
                     /* check what type of link was requested and execute
@@ -271,47 +263,18 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
                             content with the fine-art of pop-up advertising
                             and animated display banners */
                         requester = new WebRequester();
-                        requester.request(messageView, addressText, item);
                     } else if (addressText.startsWith("mailto:") == true) {
                         /* this is a mailto link */
-                        openEmailClient(addressText.replace("mailto:", ""));
+                        requester = new EmailRequester();
                     } else {
                         /* just fetch as regular gopher content */
                         requester = gopher;
-                        requester.request(messageView, addressText, item);
                     }
                     break;
             }
         }
+        requester.request(messageView, addressText, item);
     }
-
-    private void openEmailClient(String emailAddress) {
-        String confirmText = "Do you want to send an e-mail to \"" + emailAddress + "\"?";
-        String[] optionList = new String[]{"Create new e-mail", "Dismiss"};
-        messageView.showConfirm(confirmText, optionList, (int option) -> {
-            if (option == 0) {
-                /* launch the system email client */
-                if (Desktop.isDesktopSupported() == true
-                        && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                    try {
-                        /* launch the mailto handler of the system */
-                        Desktop.getDesktop().browse(new URI("mailto:" + emailAddress));
-                    } catch (IOException | URISyntaxException ex) {
-                        /* Error: cannot open email client */
-                        System.out.println("Unable to open system's "
-                                + "email client: " + ex.getMessage());
-                    }
-                }
-                /* hide the message view */
-                messageView.setVisible(false);
-            } else {
-                /* hide the message view */
-                messageView.setVisible(false);
-            }
-        });
-    }
-
-
 
     @Override
     public void backwardRequested() {
