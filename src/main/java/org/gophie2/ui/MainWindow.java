@@ -53,6 +53,7 @@ import org.gophie2.ui.tk.download.ConfirmDownload;
 import org.gophie2.ui.tk.requesters.GopherRequester;
 import org.gophie2.ui.tk.requesters.Requester;
 import org.gophie2.ui.tk.requesters.TelnetRequester;
+import org.gophie2.ui.tk.requesters.WebRequester;
 
 public class MainWindow extends PageMenuEventAdapter implements NavigationInputListener, GopherClientEventListener, PageMenuEventListener {
 
@@ -269,7 +270,8 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
                             user can enjoy bloated javascript based html
                             content with the fine-art of pop-up advertising
                             and animated display banners */
-                        openWebContent(addressText, item.getItemType());
+                        requester = new WebRequester();
+                        requester.request(messageView, addressText, item);
                     } else if (addressText.startsWith("mailto:") == true) {
                         /* this is a mailto link */
                         openEmailClient(addressText.replace("mailto:", ""));
@@ -309,32 +311,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         });
     }
 
-    private void openWebContent(String addressText, GopherItemType contentType) {
-        String confirmText = "Open \"" + addressText + "\" with your web browser?";
-        String[] optionList = new String[]{"Open Website", "Dismiss"};
-        messageView.showConfirm(confirmText, optionList, (int option) -> {
-            if (option == 0) {
-                /* launch the system WWW browser */
-                if (Desktop.isDesktopSupported() == true
-                        && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                    try {
-                        /* launch the systems WWW browser */
-                        Desktop.getDesktop().browse(new URI(addressText));
-                    } catch (IOException | URISyntaxException ex) {
-                        /* Error: cannot enjoy bloated javascript
-                        stuffed World Wide Web pages! */
-                        System.out.println("Unable to open system's "
-                                + "world wide web browser: " + ex.getMessage());
-                    }
-                }
-                /* hide the message view */
-                messageView.setVisible(false);
-            } else {
-                /* hide the message view */
-                messageView.setVisible(false);
-            }
-        });
-    }
+
 
     @Override
     public void backwardRequested() {
