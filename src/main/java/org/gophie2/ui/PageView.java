@@ -52,6 +52,8 @@ import org.gophie2.ui.event.PageMenuEventListener;
  */
 public class PageView extends JScrollPane {
 
+    private static final long serialVersionUID = -1691878866552844125L;
+
     private PageMenu pageMenu;
     private JEditorPane viewPane;
     private final JEditorPane headerPane;
@@ -241,6 +243,7 @@ public class PageView extends JScrollPane {
         /* create the page menu and attach the popup trigger */
         pageMenu = new PageMenu();
         pageMenu.addPageMenuEventListener((PageMenuEventListener) parent);
+        pageMenu.addPageMenuEventListener(parent.getDownloadRequester());
         viewPane.add(this.pageMenu);
         viewPane.addMouseListener(new MouseAdapter() {
             /* handle the popup trigger for this document */

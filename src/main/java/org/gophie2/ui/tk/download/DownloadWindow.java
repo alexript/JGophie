@@ -25,7 +25,13 @@ public class DownloadWindow implements ActionButtonEventListener {
     private final JList<DownloadItem> fileListView;
     private final ToolBar toolBar;
 
-    public DownloadWindow(DownloadList downloadList) {
+    public static final DownloadWindow INSTANCE = new DownloadWindow();
+
+    private DownloadWindow() {
+        this(DownloadList.INSTANCE);
+    }
+
+    private DownloadWindow(DownloadList downloadList) {
 
         ColorPalette colors = ConfigurationManager.getColors();
 

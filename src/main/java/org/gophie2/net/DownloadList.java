@@ -26,11 +26,13 @@ import org.gophie2.net.event.DownloadListEventListener;
 
 public class DownloadList extends ArrayList<DownloadItem> implements DownloadItemEventListener {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 9087143027422522375L;
+    public static final DownloadList INSTANCE = new DownloadList();
+
     /* event listeners for list updated */
     private final List<DownloadListEventListener> eventListener;
 
-    public DownloadList() {
+    private DownloadList() {
         this.eventListener = new ArrayList<>();
     }
 

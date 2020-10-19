@@ -37,7 +37,7 @@ import org.gophie2.fonts.IconFont;
 
 import org.gophie2.ui.event.MessageViewListener;
 
-public class MessageView extends JPanel {
+public class MessageView extends JPanel implements MessageDisplayer {
 
     private static final long serialVersionUID = 7668873418937653664L;
 
@@ -94,6 +94,7 @@ public class MessageView extends JPanel {
         return customButton;
     }
 
+    @Override
     public void showInfo(String text) {
         /* build up icon and text */
         this.messageIcon.setText("");
@@ -114,6 +115,7 @@ public class MessageView extends JPanel {
         this.setVisible(true);
     }
 
+    @Override
     public void showConfirm(String text, String[] optionList, MessageViewListener eventListener) {
         /* remove all components */
         this.messageIcon.setText("");

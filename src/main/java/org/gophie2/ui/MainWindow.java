@@ -40,8 +40,6 @@ import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.view.DataSizeView;
-import org.gophie2.net.DownloadItem;
-import org.gophie2.net.DownloadList;
 import org.gophie2.net.GopherClient;
 import org.gophie2.net.GopherItem;
 import org.gophie2.net.GopherItemType;
@@ -50,16 +48,19 @@ import org.gophie2.net.GopherUrl;
 import org.gophie2.net.event.GopherClientEventListener;
 import org.gophie2.net.event.GopherError;
 import org.gophie2.ui.event.NavigationInputListener;
+import org.gophie2.ui.event.PageMenuEventAdapter;
 import org.gophie2.ui.event.PageMenuEventListener;
+import org.gophie2.ui.tk.requesters.ConfirmDownload;
+import org.gophie2.ui.tk.requesters.Requester;
 
-public class MainWindow implements NavigationInputListener, GopherClientEventListener, PageMenuEventListener {
+public class MainWindow extends PageMenuEventAdapter implements NavigationInputListener, GopherClientEventListener, PageMenuEventListener {
 
     public static final String APPLICATION_TITLE = "Gophie2";
 
     public static final String DEFAULT_GOPHERHOME = "gopher.floodgap.com";
 
     private final GopherClient gopherClient;
-    private final DownloadList downloadList;
+
 
     private List<GopherPage> history = new ArrayList<>();
     private int historyPosition = -1;
@@ -70,21 +71,26 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
     private final JPanel headerBar;
     private final MessageView messageView;
     private final SearchPanel searchInput;
-    private final DownloadWindow downloadWindow;
+
+    private final ConfirmDownload requesterConfirmDownload;
+
+    public JFrame getMainWindowFrame() {
+        return frame;
+    }
+
+    public ConfirmDownload getDownloadRequester() {
+        return requesterConfirmDownload;
+    }
 
     public MainWindow() {
         /* get the config file */
         ConfigFile configFile = ConfigurationManager.getConfigFile();
         ColorPalette colors = ConfigurationManager.getColors();
 
+        requesterConfirmDownload = new ConfirmDownload(this);
+
         /* create the instance of the client */
         gopherClient = new GopherClient();
-
-        /* create the download list */
-        downloadList = new DownloadList();
-
-        /* create the download window */
-        downloadWindow = new DownloadWindow(downloadList);
 
         /* create the main window */
         frame = new JFrame(APPLICATION_TITLE);
@@ -214,54 +220,16 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
         }
     }
 
-    public void confirmDownload(String addressText, GopherItem item) {
-        /* binary files are handled by the download manager */
-        String confirmText = "Download \"" + item.getFileName()
-                + "\" from \"" + item.getHostName() + "\"?";
-        String[] optionList = new String[]{"Open", "Save", "Dismiss"};
-        this.messageView.showConfirm(confirmText, optionList, (int option) -> {
-            if (option == 0) {
-                /* store file to download directory and open */
-                String targetFileName = ConfigurationManager.getDownloadPath() + item.getFileName();
-                downloadList.add(new DownloadItem(item, targetFileName, true));
-
-                /* hide the message view */
-                messageView.setVisible(false);
-            }
-            if (option == 1) {
-                /* initiate the download */
-                initiateDownload(item);
-
-                /* hide the message view */
-                messageView.setVisible(false);
-            }
-
-            /* hide the message view */
-            messageView.setVisible(false);
-        });
-    }
-
-    public void initiateDownload(GopherItem fileItem) {
-        /* let user select where to store the file */
-        FileDialog fileDialog = new FileDialog(frame, "Download and save file", FileDialog.SAVE);
-        fileDialog.setFile(fileItem.getFileNameWithForcedExt());
-        fileDialog.setVisible(true);
-        String targetFileName = fileDialog.getDirectory() + fileDialog.getFile();
-        if (targetFileName.equals(null) == false
-                && targetFileName.equals("nullnull") == false) {
-            /* pass url and target file to download manager */
-            downloadList.add(new DownloadItem(fileItem, targetFileName, false));
-        }
-    }
-
     @Override
     public void addressRequested(String addressText, GopherItem item) {
+        Requester requester;
         /* check if this file is binary or not as
             binaries such as media or other files
             will be handled differently (e.g. downloaded) */
         if (item.getItemType().isBinary()) {
             /* binary files are handled by the download manager */
-            confirmDownload(addressText, item);
+            requester = requesterConfirmDownload;
+            requester.request(messageView, addressText, item);
         } else {
             /* this is not a binary file, try to handle and render */
             switch (item.getItemType()) {
@@ -534,10 +502,10 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
 
     @Override
     public void showDownloadRequested() {
-        if (downloadWindow.isVisible()) {
-            downloadWindow.hide();
+        if (DownloadWindow.INSTANCE.isVisible()) {
+            DownloadWindow.INSTANCE.hide();
         } else {
-            downloadWindow.show(frame);
+            DownloadWindow.INSTANCE.show(frame);
         }
     }
 
@@ -549,10 +517,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
         configFile.save();
     }
 
-    @Override
-    public void itemDownloadRequested(GopherItem item) {
-        initiateDownload(item);
-    }
+
 
     @Override
     public void pageSaveRequested(GopherPage page) {
@@ -561,7 +526,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
         fileDialog.setFile(page.getFileName());
         fileDialog.setVisible(true);
         String targetFileName = fileDialog.getDirectory() + fileDialog.getFile();
-        if (targetFileName.equals(null) == false
+        if (targetFileName.equals("null") == false
                 && targetFileName.equals("nullnull") == false) {
             /* pass url and target file to download manager */
             page.saveAsFile(targetFileName);
