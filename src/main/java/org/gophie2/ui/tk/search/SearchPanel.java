@@ -27,17 +27,24 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.fonts.DefaultFont;
+import org.gophie2.net.GopherItem;
+import org.gophie2.net.GopherItemType;
+import org.gophie2.ui.MessageDisplayer;
 
 import org.gophie2.ui.event.SearchInputListener;
+import org.gophie2.ui.tk.requesters.GopherRequester;
+import org.gophie2.ui.tk.requesters.Requester;
 
-public class SearchPanel extends JPanel {
+public class SearchPanel extends JPanel implements Requester {
 
     private static final long serialVersionUID = 5104881772647618206L;
 
     JLabel searchTitle;
     JTextField searchText;
+    private final GopherRequester gopher;
 
-    public SearchPanel() {
+    public SearchPanel(GopherRequester gopher) {
+        this.gopher = gopher;
         init();
     }
 
@@ -84,5 +91,16 @@ public class SearchPanel extends JPanel {
         });
         setVisible(true);
         searchText.grabFocus();
+    }
+
+    @Override
+    public void request(MessageDisplayer messenger, String addressText, GopherItem item) {
+        /* show the search interface */
+        performSearch(item.getUserDisplayString(), (String text) -> {
+            /* execute search through gopher */
+            String searchQueryText = addressText + "\t" + text;
+            gopher.request(messenger, searchQueryText, GopherItemType.GOPHERMENU);
+        });
+
     }
 }

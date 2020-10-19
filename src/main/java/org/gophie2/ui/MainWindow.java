@@ -40,7 +40,6 @@ import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.view.DataSizeView;
-import org.gophie2.net.GopherClient;
 import org.gophie2.net.GopherItem;
 import org.gophie2.net.GopherItemType;
 import org.gophie2.net.GopherPage;
@@ -50,7 +49,8 @@ import org.gophie2.net.event.GopherError;
 import org.gophie2.ui.event.NavigationInputListener;
 import org.gophie2.ui.event.PageMenuEventAdapter;
 import org.gophie2.ui.event.PageMenuEventListener;
-import org.gophie2.ui.tk.requesters.ConfirmDownload;
+import org.gophie2.ui.tk.download.ConfirmDownload;
+import org.gophie2.ui.tk.requesters.GopherRequester;
 import org.gophie2.ui.tk.requesters.Requester;
 
 public class MainWindow extends PageMenuEventAdapter implements NavigationInputListener, GopherClientEventListener, PageMenuEventListener {
@@ -59,8 +59,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
 
     public static final String DEFAULT_GOPHERHOME = "gopher.floodgap.com";
 
-    private final GopherClient gopherClient;
-
+    private final GopherRequester gopher;
 
     private List<GopherPage> history = new ArrayList<>();
     private int historyPosition = -1;
@@ -89,17 +88,11 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
 
         requesterConfirmDownload = new ConfirmDownload(this);
 
-        /* create the instance of the client */
-        gopherClient = new GopherClient();
-
         /* create the main window */
         frame = new JFrame(APPLICATION_TITLE);
         frame.setMinimumSize(new Dimension(800, 600));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        /* create the page view component object */
-        pageView = new PageView(this);
-        pageView.addListener(this);
 
         /* create the navigation bar */
         navigationBar = new NavigationBar(
@@ -107,6 +100,12 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
                 colors.getNavigationbarText(),
                 colors.getNavigationbarTextHover()
         );
+
+        gopher = new GopherRequester(this, navigationBar);
+
+        /* create the page view component object */
+        pageView = new PageView(this);
+        pageView.addListener(this);
 
         /* set the gopher home as defined in the config
             or use the default one if none is defined */
@@ -122,7 +121,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         headerBar.setLayout(new BoxLayout(headerBar, BoxLayout.Y_AXIS));
         messageView = new MessageView();
         headerBar.add(messageView);
-        searchInput = new SearchPanel();
+        searchInput = new SearchPanel(gopher);
         headerBar.add(searchInput);
 
         /* set the content pane */
@@ -234,12 +233,8 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
             /* this is not a binary file, try to handle and render */
             switch (item.getItemType()) {
                 case FULLTEXT_SEARCH:
-                    /* show the search interface */
-                    searchInput.performSearch(item.getUserDisplayString(), (String text) -> {
-                        /* execute search through gopher */
-                        String searchQueryText = addressText + "\t" + text;
-                        fetchGopherContent(searchQueryText, GopherItemType.GOPHERMENU);
-                    });
+                    requester = searchInput;
+                    requester.request(messageView, addressText, item);
                     break;
                 case CCSCO_NAMESERVER:
                     /* CCSO is not part of the Gopher protocol, but its very own
@@ -365,20 +360,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
     }
 
     private void fetchGopherContent(String addressText, GopherItemType contentType) {
-        /* this is default gopher content */
- /* activate the load indicator in the address bar */
-        navigationBar.setIsLoading(true);
-
-        /* update the navigation bar with the new address */
-        navigationBar.setAddressText(addressText);
-
-        try {
-            /* try to execute the thread */
-            gopherClient.fetchAsync(addressText, contentType, this);
-        } catch (Exception ex) {
-            /* might throw an ex when thread is interrupted */
-            System.out.println("Exception while fetching async: " + ex.getMessage());
-        }
+        gopher.request(messageView, addressText, contentType);
     }
 
     @Override
@@ -421,7 +403,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
     @Override
     public void stopRequested() {
         /* cancel any current operation */
-        gopherClient.cancelFetch();
+        gopher.cancel();
 
         /* notify the local handler about cancellation by the user */
         pageLoadFailed(GopherError.USER_CANCELLED, null);
@@ -516,8 +498,6 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         configFile.set("Navigation", "GOPHERHOME", url);
         configFile.save();
     }
-
-
 
     @Override
     public void pageSaveRequested(GopherPage page) {

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.gophie2.ui.tk.requesters;
+package org.gophie2.ui.tk.download;
 
 import java.awt.FileDialog;
 import org.gophie2.config.ConfigurationManager;
@@ -24,6 +24,7 @@ import org.gophie2.net.GopherItem;
 import org.gophie2.ui.MainWindow;
 import org.gophie2.ui.MessageDisplayer;
 import org.gophie2.ui.event.PageMenuEventAdapter;
+import org.gophie2.ui.tk.requesters.Requester;
 
 /**
  *
