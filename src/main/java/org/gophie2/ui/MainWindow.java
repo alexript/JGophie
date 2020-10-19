@@ -23,10 +23,9 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Toolkit;
+import java.util.logging.Logger;
 import org.gophie2.ui.tk.search.SearchPanel;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -46,6 +45,7 @@ import org.gophie2.ui.event.NavigationInputListener;
 import org.gophie2.ui.event.PageMenuEventAdapter;
 import org.gophie2.ui.event.PageMenuEventListener;
 import org.gophie2.ui.tk.download.ConfirmDownload;
+import org.gophie2.ui.tk.history.History;
 import org.gophie2.ui.tk.requesters.EmailRequester;
 import org.gophie2.ui.tk.requesters.GopherRequester;
 import org.gophie2.ui.tk.requesters.Requester;
@@ -60,8 +60,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
 
     private final GopherRequester gopher;
 
-    private List<GopherPage> history = new ArrayList<>();
-    private int historyPosition = -1;
+    private final History history;
 
     private final JFrame frame;
     private final PageView pageView;
@@ -99,6 +98,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
                 colors.getNavigationbarText(),
                 colors.getNavigationbarTextHover()
         );
+        history = new History(this, navigationBar);
 
         gopher = new GopherRequester(this, navigationBar);
 
@@ -143,79 +143,6 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         /* display the window */
         frame.pack();
         frame.setVisible(true);
-    }
-
-    private void updateHistory(GopherPage page) {
-        Boolean addToHistory = false;
-
-        /* check if current position is at last page */
-        if (historyPosition == history.size() - 1) {
-            /* add this page to the history */
-            if (history.size() > 0) {
-                /* make sure this was not just a reload and the last
-                    page in the history is not already ours */
-                if (!history.get(history.size() - 1).getUrl().getUrlString()
-                        .equals(page.getUrl().getUrlString())) {
-                    /* just drop it in */
-                    addToHistory = true;
-                }
-            } else {
-                /* empty history, just drop in the page */
-                addToHistory = true;
-            }
-        } else {
-            /* user navigation inside history, check if the current
-                page is at the position in history or if it is a
-                new page the user went to */
-            if (!history.get(historyPosition).getUrl()
-                    .getUrlString().equals(page.getUrl().getUrlString())) {
-                /* it is a new page outside the history, keep the history
-                    up until the current page and add this page as a new
-                    branch to the history, eliminating the
-                    previous branch forward */
-                ArrayList<GopherPage> updatedHistory = new ArrayList<>();
-                for (int h = 0; h <= historyPosition; h++) {
-                    updatedHistory.add(history.get(h));
-                }
-
-                /* update the history */
-                history = updatedHistory;
-
-                /* allow adding to history */
-                addToHistory = true;
-            }
-        }
-
-        /* reset navigation allowance */
-        navigationBar.setNavigateBack(false);
-        navigationBar.setNavigateForward(false);
-
-        /* add to history, if allowed */
-        if (addToHistory == true) {
-            /* add to the stack of pages */
-            history.add(page);
-
-            /* update position to the top */
-            historyPosition = history.size() - 1;
-
-            /* disable forward */
-            navigationBar.setNavigateForward(false);
-            if (history.size() > 1) {
-                /* allow back if more than just this page exist */
-                navigationBar.setNavigateBack(true);
-            }
-        } else {
-            /* if position is 0, there is nowhere to go back to */
-            if (historyPosition > 0) {
-                /* allow navigation back in history */
-                navigationBar.setNavigateBack(true);
-            }
-            if (historyPosition < (history.size() - 1)) {
-                /* if position is at the end, there is nowhere
-                    to move forward to */
-                navigationBar.setNavigateForward(true);
-            }
-        }
     }
 
     @Override
@@ -278,36 +205,18 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
 
     @Override
     public void backwardRequested() {
-        /* set the new history position */
-        if (historyPosition > 0) {
-            historyPosition--;
-
-            /* get the new page from history */
-            pageLoaded(history.get(historyPosition));
-
-            /* update the history */
-            updateHistory(history.get(historyPosition));
-        }
+        history.backwardRequested();
     }
 
     @Override
     public void forwardRequested() {
-        /* set the new history position */
-        if (historyPosition < (history.size() - 1)) {
-            historyPosition++;
-
-            /* get the new page from history */
-            pageLoaded(history.get(historyPosition));
-
-            /* update the history */
-            updateHistory(history.get(historyPosition));
-        }
+        history.forwardRequested();
     }
 
     @Override
     public void refreshRequested() {
         /* get the current gopher page to reload it */
-        GopherPage currentPage = history.get(historyPosition);
+        GopherPage currentPage = history.current();
 
         /* reload practically means just requesting this page again */
         gopher.request(messageView, currentPage.getUrl().getUrlString(), currentPage.getContentType());
@@ -346,7 +255,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         }
 
         /* update the history */
-        updateHistory(result);
+        history.updateHistory(result);
 
         /* reset the loading indicators */
         navigationBar.setIsLoading(false);
@@ -354,34 +263,33 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
 
     @Override
     public void pageLoadFailed(GopherError error, GopherUrl url) {
-        /* show message for connection timeout */
-        if (error == GopherError.CONNECT_FAILED) {
-            if (url != null) {
-                messageView.showInfo("Connection refused: " + url.getHost());
-            }
+        String infoText = null;
+        switch (error) {
+            case CONNECT_FAILED:
+                if (url != null) {
+                    infoText = "Connection refused: " + url.getHost();
+                }
+                break;
+            case CONNECTION_TIMEOUT:
+                if (url != null) {
+                    infoText = "Connection timed out: " + url.getHost();
+                }
+                break;
+            case HOST_UNKNOWN:
+                if (url != null) {
+                    infoText = "Server not found: " + url.getHost();
+                }
+                break;
+            case EXCEPTION:
+                infoText = "Ouchn, an unknown error occured.";
+                break;
         }
-
-        /* show message for connection timeout */
-        if (error == GopherError.CONNECTION_TIMEOUT) {
-            if (url != null) {
-                messageView.showInfo("Connection timed out: " + url.getHost());
-            }
-        }
-
-        /* show DNS or host not found error */
-        if (error == GopherError.HOST_UNKNOWN) {
-            if (url != null) {
-                messageView.showInfo("Server not found: " + url.getHost());
-            }
-        }
-
-        /* show some information about an exception */
-        if (error == GopherError.EXCEPTION) {
-            messageView.showInfo("Ouchn, an unknown error occured.");
+        if (infoText != null) {
+            messageView.showInfo(infoText);
         }
 
         /* output some base information to the console */
-        System.out.println("Failed to load gopher page: " + error.toString());
+        Logger.getLogger(this.getClass().getName()).warning("Failed to load gopher page: " + error.toString());
 
         /* reset the navigation bar status */
         navigationBar.setIsLoading(false);
