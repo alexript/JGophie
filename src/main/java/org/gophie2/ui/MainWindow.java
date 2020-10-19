@@ -52,6 +52,7 @@ import org.gophie2.ui.event.PageMenuEventListener;
 import org.gophie2.ui.tk.download.ConfirmDownload;
 import org.gophie2.ui.tk.requesters.GopherRequester;
 import org.gophie2.ui.tk.requesters.Requester;
+import org.gophie2.ui.tk.requesters.TelnetRequester;
 
 public class MainWindow extends PageMenuEventAdapter implements NavigationInputListener, GopherClientEventListener, PageMenuEventListener {
 
@@ -137,7 +138,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         frame.setVisible(true);
 
         /* fetch the default gopher home */
-        fetchGopherContent(gopherHome, GopherItemType.GOPHERMENU);
+        gopher.request(messageView, gopherHome, GopherItemType.GOPHERMENU);
     }
 
     public void show() {
@@ -244,15 +245,18 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
                         would be a software of its own, but sources are even fewer
                         than Gopher servers out there. Hence, Gophie allows the
                         user to use CCSO servers throgh their Telnet client. */
-                    openTelnetSession(item.getHostName(), item.getPortNumber());
+                    requester = new TelnetRequester();
+                    requester.request(messageView, addressText, item);
                     break;
                 case TELNET:
                     /* handle telnet session requests */
-                    openTelnetSession(item.getHostName(), item.getPortNumber());
+                    requester = new TelnetRequester();
+                    requester.request(messageView, addressText, item);
                     break;
                 case TELNET3270:
                     /* handle telnet 3270 session requests */
-                    openTelnetSession(item.getHostName(), item.getPortNumber());
+                    requester = new TelnetRequester();
+                    requester.request(messageView, addressText, item);
                     break;
                 default:
                     /* check what type of link was requested and execute
@@ -271,7 +275,8 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
                         openEmailClient(addressText.replace("mailto:", ""));
                     } else {
                         /* just fetch as regular gopher content */
-                        fetchGopherContent(addressText, item.getItemType());
+                        requester = gopher;
+                        requester.request(messageView, addressText, item);
                     }
                     break;
             }
@@ -293,34 +298,6 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
                         /* Error: cannot open email client */
                         System.out.println("Unable to open system's "
                                 + "email client: " + ex.getMessage());
-                    }
-                }
-                /* hide the message view */
-                messageView.setVisible(false);
-            } else {
-                /* hide the message view */
-                messageView.setVisible(false);
-            }
-        });
-    }
-
-    private void openTelnetSession(String hostName, int portNumber) {
-        String confirmText = "Open a Telnet session with \"" + hostName + ":" + portNumber + "\"?";
-        String[] optionList = new String[]{"Open Telnet", "Dismiss"};
-        messageView.showConfirm(confirmText, optionList, (int option) -> {
-            if (option == 0) {
-                /* launch the system WWW browser */
-                if (Desktop.isDesktopSupported() == true
-                        && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                    try {
-                        /* launch the systems telnet client by creating
-                        a telnet URI and calling the systems protocol handler */
-                        String telnetUri = "telnet://" + hostName + ":" + portNumber;
-                        Desktop.getDesktop().browse(new URI(telnetUri));
-                    } catch (IOException | URISyntaxException ex) {
-                        /* Error: cannot open telnet client */
-                        System.out.println("Unable to open system's "
-                                + "telnet client: " + ex.getMessage());
                     }
                 }
                 /* hide the message view */
@@ -359,10 +336,6 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         });
     }
 
-    private void fetchGopherContent(String addressText, GopherItemType contentType) {
-        gopher.request(messageView, addressText, contentType);
-    }
-
     @Override
     public void backwardRequested() {
         /* set the new history position */
@@ -397,7 +370,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         GopherPage currentPage = history.get(historyPosition);
 
         /* reload practically means just requesting this page again */
-        fetchGopherContent(currentPage.getUrl().getUrlString(), currentPage.getContentType());
+        gopher.request(messageView, currentPage.getUrl().getUrlString(), currentPage.getContentType());
     }
 
     @Override
@@ -523,7 +496,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
     public void homeGopherRequested() {
         ConfigFile configFile = ConfigurationManager.getConfigFile();
         String homeGopherUrl = configFile.get("Navigation", "GOPHERHOME", DEFAULT_GOPHERHOME);
-        fetchGopherContent(homeGopherUrl, GopherItemType.GOPHERMENU);
+        gopher.request(messageView, homeGopherUrl, GopherItemType.GOPHERMENU);
         navigationBar.setAddressText(homeGopherUrl);
     }
 }
