@@ -25,7 +25,7 @@ import java.util.Base64;
 import java.util.List;
 
 import org.gophie2.config.ConfigurationManager;
-import org.gophie2.net.GopherItem.GopherItemType;
+import org.gophie2.net.GopherItemType;
 
 /**
  * A GopherMenu page object that contains all information and Gopher items
@@ -217,7 +217,7 @@ public class GopherPage {
 
         /* check if the file has an extension */
         if (result.lastIndexOf(".") == -1) {
-            result += "." + GopherItem.getDefaultFileExt(this.getContentType());
+            result += "." + this.getContentType().getFileExt();
         }
 
         return result;

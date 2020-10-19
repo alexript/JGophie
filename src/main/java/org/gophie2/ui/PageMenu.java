@@ -32,7 +32,7 @@ import javax.imageio.ImageIO;
 import org.gophie2.ui.event.PageMenuEventListener;
 import org.gophie2.ui.util.ImageTransferable;
 import org.gophie2.net.GopherPage;
-import org.gophie2.net.GopherItem.GopherItemType;
+import org.gophie2.net.GopherItemType;
 import org.gophie2.net.GopherItem;
 
 public class PageMenu extends PopupMenu {

@@ -24,7 +24,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
-import org.gophie2.net.GopherItem.GopherItemType;
+import org.gophie2.net.GopherItemType;
 import org.gophie2.net.event.GopherClientEventListener;
 import org.gophie2.net.event.GopherError;
 

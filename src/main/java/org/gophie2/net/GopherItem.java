@@ -19,38 +19,12 @@ package org.gophie2.net;
 
 public class GopherItem {
 
-    /* defines the official types of gopher items */
-    public enum GopherItemType {
-        /* Canonical types */
-        TEXTFILE, // 0 = Text file
-        GOPHERMENU, // 1 = Gopher (sub-)menu
-        CCSCO_NAMESERVER, // 2 = CCSO Nameserver
-        ERRORCODE, // 3 = Error code returned by a Gopher server to indicate failure
-        BINHEX_FILE, // 4 = BinHex-encoded file (primarily for Macintosh computers)
-        DOS_FILE, // 5 = DOS file
-        UUENCODED_FILE, // 6 = uuencoded file
-        FULLTEXT_SEARCH, // 7 = Gopher full-text search
-        TELNET, // 8 = Telnet
-        BINARY_FILE, // 9 = Binary file
-        MIRROR, // + = Mirror or alternate server (load balance or failover)
-        GIF_FILE, // g = GIF file
-        IMAGE_FILE, // I = Image file
-        TELNET3270, // T = Telnet 3270
-
-        /* Non-canonical types */
-        HTML_FILE, // h = HTML file
-        INFORMATION, // i = Informational message
-        SOUND_FILE, // s = Sound file (especially the WAV format)
-
-        /* Gophie specific (Non-standard) */
-        UNKNOWN;                     // any other unknown item type code
-    }
 
     /* defines the type of this gopher item */
     private GopherItemType itemType = GopherItemType.UNKNOWN;
 
     /* defines the item type code of this gopher item */
-    private String itemTypeCode = "?";
+    private String itemTypeCode = GopherItemType.UNKNOWN.getTypeCode();
 
     /* the user display string of this gopher item */
     private String userDisplayString = "";
@@ -228,7 +202,7 @@ public class GopherItem {
 
         /* check if the file has an extension */
         if (result.lastIndexOf(".") == -1) {
-            result += "." + GopherItem.getDefaultFileExt(this.getItemType());
+            result += "." + this.getItemType().getFileExt();
         }
 
         return result;
@@ -251,214 +225,12 @@ public class GopherItem {
     }
 
     /**
-     * Returns whether this item is supposed to be some sort of binary file that
-     * needs to be downloaded or handled differently
-     *
-     * @return true when is binary file, otherwise false
-     */
-    public Boolean isBinaryFile() {
-        Boolean result = false;
-
-        if (this.itemType == GopherItemType.BINHEX_FILE
-                || this.itemType == GopherItemType.DOS_FILE
-                || this.itemType == GopherItemType.UUENCODED_FILE
-                || this.itemType == GopherItemType.BINARY_FILE
-                || this.itemType == GopherItemType.SOUND_FILE) {
-            /* this item is a binary file */
-            result = true;
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the default file extension for the provided gopher item type
-     *
-     * @param itemType the item type to
-     *
-     * @return File extension as string
-     */
-    public static String getDefaultFileExt(GopherItemType itemType) {
-        String result = "dat";
-
-        if (itemType == GopherItemType.TEXTFILE) {
-            result = "txt";
-        }
-        if (itemType == GopherItemType.GOPHERMENU) {
-            result = "gophermap";
-        }
-        if (itemType == GopherItemType.CCSCO_NAMESERVER) {
-            result = "ccso";
-        }
-        if (itemType == GopherItemType.ERRORCODE) {
-            result = "error";
-        }
-        if (itemType == GopherItemType.BINHEX_FILE) {
-            result = "hqx";
-        }
-        if (itemType == GopherItemType.DOS_FILE) {
-            result = "dat";
-        }
-        if (itemType == GopherItemType.UUENCODED_FILE) {
-            result = "uue";
-        }
-        if (itemType == GopherItemType.FULLTEXT_SEARCH) {
-            result = "txt";
-        }
-        if (itemType == GopherItemType.TELNET) {
-            result = "txt";
-        }
-        if (itemType == GopherItemType.BINARY_FILE) {
-            result = "dat";
-        }
-        if (itemType == GopherItemType.MIRROR) {
-            result = "txt";
-        }
-        if (itemType == GopherItemType.GIF_FILE) {
-            result = "gif";
-        }
-        if (itemType == GopherItemType.IMAGE_FILE) {
-            result = "jpg";
-        }
-        if (itemType == GopherItemType.TELNET3270) {
-            result = "txt";
-        }
-        if (itemType == GopherItemType.HTML_FILE) {
-            result = "htm";
-        }
-        if (itemType == GopherItemType.INFORMATION) {
-            result = "txt";
-        }
-        if (itemType == GopherItemType.SOUND_FILE) {
-            result = "wav";
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the type name in a human readable format
-     *
-     * @return Type name of this gopher item as human readable string
-     */
-    public String getTypeName() {
-        String result = "Unknown";
-
-        if (this.getItemType() == GopherItemType.TEXTFILE) {
-            result = "Text file";
-        }
-        if (this.getItemType() == GopherItemType.GOPHERMENU) {
-            result = "Gopher menu";
-        }
-        if (this.getItemType() == GopherItemType.CCSCO_NAMESERVER) {
-            result = "CCSO Nameserver";
-        }
-        if (this.getItemType() == GopherItemType.ERRORCODE) {
-            result = "Error code";
-        }
-        if (this.getItemType() == GopherItemType.BINHEX_FILE) {
-            result = "BinHex file (Macintosh)";
-        }
-        if (this.getItemType() == GopherItemType.DOS_FILE) {
-            result = "DOS file";
-        }
-        if (this.getItemType() == GopherItemType.UUENCODED_FILE) {
-            result = "uuencoded file";
-        }
-        if (this.getItemType() == GopherItemType.FULLTEXT_SEARCH) {
-            result = "Full-text search";
-        }
-        if (this.getItemType() == GopherItemType.TELNET) {
-            result = "Telnet";
-        }
-        if (this.getItemType() == GopherItemType.BINARY_FILE) {
-            result = "Binary file";
-        }
-        if (this.getItemType() == GopherItemType.MIRROR) {
-            result = "Mirror";
-        }
-        if (this.getItemType() == GopherItemType.GIF_FILE) {
-            result = "GIF file";
-        }
-        if (this.getItemType() == GopherItemType.IMAGE_FILE) {
-            result = "Image file";
-        }
-        if (this.getItemType() == GopherItemType.TELNET3270) {
-            result = "Telnet 3270";
-        }
-        if (this.getItemType() == GopherItemType.HTML_FILE) {
-            result = "HTML file";
-        }
-        if (this.getItemType() == GopherItemType.INFORMATION) {
-            result = "Information";
-        }
-        if (this.getItemType() == GopherItemType.SOUND_FILE) {
-            result = "Sound file";
-        }
-
-        return result;
-    }
-
-    /**
      * Sets the code locally and also the proper type enum value
      *
      * @param code the single-char gopher item type code
      */
     private void setItemTypeByCode(String code) {
         this.itemTypeCode = code;
-        if (code.equals("0")) {
-            this.itemType = GopherItemType.TEXTFILE;
-        }
-        if (code.equals("1")) {
-            this.itemType = GopherItemType.GOPHERMENU;
-        }
-        if (code.equals("2")) {
-            this.itemType = GopherItemType.CCSCO_NAMESERVER;
-        }
-        if (code.equals("3")) {
-            this.itemType = GopherItemType.ERRORCODE;
-        }
-        if (code.equals("4")) {
-            this.itemType = GopherItemType.BINHEX_FILE;
-        }
-        if (code.equals("5")) {
-            this.itemType = GopherItemType.DOS_FILE;
-        }
-        if (code.equals("6")) {
-            this.itemType = GopherItemType.UUENCODED_FILE;
-        }
-        if (code.equals("7")) {
-            this.itemType = GopherItemType.FULLTEXT_SEARCH;
-        }
-        if (code.equals("8")) {
-            this.itemType = GopherItemType.TELNET;
-        }
-        if (code.equals("9")) {
-            this.itemType = GopherItemType.BINARY_FILE;
-        }
-        if (code.equals("+")) {
-            this.itemType = GopherItemType.MIRROR;
-        }
-        if (code.equals("g")) {
-            this.itemType = GopherItemType.GIF_FILE;
-        }
-        if (code.equals("I")) {
-            this.itemType = GopherItemType.IMAGE_FILE;
-        }
-        if (code.equals("T")) {
-            this.itemType = GopherItemType.TELNET3270;
-        }
-        if (code.equals("h")) {
-            this.itemType = GopherItemType.HTML_FILE;
-        }
-        if (code.equals("i")) {
-            this.itemType = GopherItemType.INFORMATION;
-        }
-        if (code.equals("s")) {
-            this.itemType = GopherItemType.SOUND_FILE;
-        }
-        if (code.equals("?")) {
-            this.itemType = GopherItemType.UNKNOWN;
-        }
+        this.itemType = GopherItemType.getByCode(code);
     }
 }

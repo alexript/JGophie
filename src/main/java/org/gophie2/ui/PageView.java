@@ -43,7 +43,7 @@ import org.gophie2.fonts.ConsoleFont;
 
 import org.gophie2.net.GopherItem;
 import org.gophie2.net.GopherPage;
-import org.gophie2.net.GopherItem.GopherItemType;
+import org.gophie2.net.GopherItemType;
 import org.gophie2.ui.event.NavigationInputListener;
 import org.gophie2.ui.event.PageMenuEventListener;
 

@@ -44,7 +44,7 @@ import org.gophie2.net.DownloadItem;
 import org.gophie2.net.DownloadList;
 import org.gophie2.net.GopherClient;
 import org.gophie2.net.GopherItem;
-import org.gophie2.net.GopherItem.GopherItemType;
+import org.gophie2.net.GopherItemType;
 import org.gophie2.net.GopherPage;
 import org.gophie2.net.GopherUrl;
 import org.gophie2.net.event.GopherClientEventListener;
@@ -259,7 +259,7 @@ public class MainWindow implements NavigationInputListener, GopherClientEventLis
         /* check if this file is binary or not as
             binaries such as media or other files
             will be handled differently (e.g. downloaded) */
-        if (item.isBinaryFile()) {
+        if (item.getItemType().isBinary()) {
             /* binary files are handled by the download manager */
             confirmDownload(addressText, item);
         } else {
