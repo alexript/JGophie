@@ -125,9 +125,9 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
 
         /* set the content pane */
         Container contentPane = frame.getContentPane();
-        contentPane.add(headerBar, BorderLayout.NORTH);
+        contentPane.add(navigationBar, BorderLayout.NORTH);
         contentPane.add(pageView, BorderLayout.CENTER);
-        contentPane.add(navigationBar, BorderLayout.SOUTH);
+        contentPane.add(headerBar, BorderLayout.SOUTH);
 
         /* start the window in the center of the screen */
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
