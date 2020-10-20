@@ -15,9 +15,9 @@
     along with Gophie. If not, see <https://www.gnu.org/licenses/>.
 
  */
-package org.gophie2.net.event;
+package org.gophie2.net;
 
-public enum GopherError {
+public enum Error {
     EXCEPTION,
     INVALID_URL,
     HOST_UNKNOWN,

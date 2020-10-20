@@ -34,7 +34,7 @@ import org.gophie2.fonts.ConsoleFont;
 import org.gophie2.view.DataSizeView;
 import org.gophie2.net.DownloadItem;
 
-import org.gophie2.net.GopherItem;
+import org.gophie2.net.GopherMenuItem;
 
 public class DownloadItemRenderer extends JPanel implements ListCellRenderer<DownloadItem> {
 
@@ -63,7 +63,7 @@ public class DownloadItemRenderer extends JPanel implements ListCellRenderer<Dow
         }
 
         /* get the gopher item of this download */
-        GopherItem item = value.getGopherItem();
+        GopherMenuItem item = value.getGopherItem();
 
         /* show the file name in the title */
         titleLabel.setText(item.getFileName());

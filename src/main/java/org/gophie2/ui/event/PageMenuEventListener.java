@@ -17,16 +17,16 @@
  */
 package org.gophie2.ui.event;
 
-import org.gophie2.net.GopherItem;
-import org.gophie2.net.GopherPage;
+import org.gophie2.net.GopherMenuItem;
+import org.gophie2.net.GopherMenu;
 
 public interface PageMenuEventListener {
 
     void setHomeGopherRequested(String url);
 
-    void itemDownloadRequested(GopherItem item);
+    void itemDownloadRequested(GopherMenuItem item);
 
-    void pageSaveRequested(GopherPage page);
+    void pageSaveRequested(GopherMenu page);
 
     void selectAllTextRequested();
 }

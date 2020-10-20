@@ -12,13 +12,13 @@ import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.net.DownloadItem;
 
-import org.gophie2.net.DownloadList;
-import org.gophie2.net.event.DownloadListEventListener;
+import org.gophie2.net.Downloads;
 import org.gophie2.ui.tk.buttons.ActionButtonEventListener;
+import org.gophie2.net.event.DownloadsEventListener;
 
 public class DownloadWindow implements ActionButtonEventListener {
 
-    private final DownloadList list;
+    private final Downloads list;
     private DownloadItem[] data;
 
     private JDialog frame;
@@ -28,22 +28,22 @@ public class DownloadWindow implements ActionButtonEventListener {
     public static final DownloadWindow INSTANCE = new DownloadWindow();
 
     private DownloadWindow() {
-        this(DownloadList.INSTANCE);
+        this(Downloads.INSTANCE);
     }
 
-    private DownloadWindow(DownloadList downloadList) {
+    private DownloadWindow(Downloads downloadList) {
 
         ColorPalette colors = ConfigurationManager.getColors();
 
         list = downloadList;
-        list.addEventListener(new DownloadListEventListener() {
+        list.addEventListener(new DownloadsEventListener() {
             @Override
-            public void downloadListUpdated() {
+            public void updated() {
                 updateList();
             }
 
             @Override
-            public void downloadProgressReported() {
+            public void progressReported() {
                 DownloadItem selected = fileListView.getSelectedValue();
                 toolBar.handleSelectionChange(selected, list.hasNonActiveItems());
                 frame.repaint();
@@ -74,7 +74,6 @@ public class DownloadWindow implements ActionButtonEventListener {
             DownloadItem selected = fileListView.getSelectedValue();
             toolBar.handleSelectionChange(selected, list.hasNonActiveItems());
         });
-
 
         updateList();
     }

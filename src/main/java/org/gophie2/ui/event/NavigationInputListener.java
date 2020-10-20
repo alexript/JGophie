@@ -17,7 +17,7 @@
  */
 package org.gophie2.ui.event;
 
-import org.gophie2.net.GopherItem;
+import org.gophie2.net.GopherMenuItem;
 
 /*
     Listener for the events raised by the
@@ -25,7 +25,7 @@ import org.gophie2.net.GopherItem;
  */
 public interface NavigationInputListener {
 
-    void addressRequested(String addressText, GopherItem item);
+    void addressRequested(String addressText, GopherMenuItem item);
 
     void homeGopherRequested();
 

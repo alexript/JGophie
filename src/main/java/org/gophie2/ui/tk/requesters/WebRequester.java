@@ -20,7 +20,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.gophie2.net.GopherItem;
+import org.gophie2.net.GopherMenuItem;
 import org.gophie2.ui.DesktopUtils;
 import org.gophie2.ui.MessageDisplayer;
 
@@ -35,7 +35,7 @@ public class WebRequester implements Requester {
     }
 
     @Override
-    public void request(MessageDisplayer messenger, String addressText, GopherItem item) {
+    public void request(MessageDisplayer messenger, String addressText, GopherMenuItem item) {
         String confirmText = "Open \"" + addressText + "\" with your web browser?";
         String[] optionList = new String[]{"Open Website", "Dismiss"};
         messenger.showConfirm(confirmText, optionList, (int option) -> {

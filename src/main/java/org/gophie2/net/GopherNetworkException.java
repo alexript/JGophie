@@ -17,16 +17,16 @@
  */
 package org.gophie2.net;
 
-import org.gophie2.net.event.GopherError;
-
 public class GopherNetworkException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5695176349566514307L;
 
-    private final GopherError errorCode;
+
+
+    private final Error errorCode;
     private final String errorMessage;
 
-    public GopherNetworkException(GopherError errorTypeCode, String errorTypeMessage) {
+    public GopherNetworkException(Error errorTypeCode, String errorTypeMessage) {
         this.errorCode = errorTypeCode;
         this.errorMessage = errorTypeMessage;
     }
@@ -35,7 +35,7 @@ public class GopherNetworkException extends Exception {
         return this.errorMessage;
     }
 
-    public GopherError getGopherErrorType() {
+    public Error getGopherErrorType() {
         return this.errorCode;
     }
 }

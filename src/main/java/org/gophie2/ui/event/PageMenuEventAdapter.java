@@ -16,8 +16,8 @@
  */
 package org.gophie2.ui.event;
 
-import org.gophie2.net.GopherItem;
-import org.gophie2.net.GopherPage;
+import org.gophie2.net.GopherMenuItem;
+import org.gophie2.net.GopherMenu;
 
 /**
  *
@@ -35,12 +35,12 @@ public class PageMenuEventAdapter implements PageMenuEventListener{
     }
 
     @Override
-    public void itemDownloadRequested(GopherItem item) {
+    public void itemDownloadRequested(GopherMenuItem item) {
 
     }
 
     @Override
-    public void pageSaveRequested(GopherPage page) {
+    public void pageSaveRequested(GopherMenu page) {
 
     }
 

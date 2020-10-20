@@ -16,7 +16,7 @@
  */
 package org.gophie2.ui.tk.requesters;
 
-import org.gophie2.net.GopherItem;
+import org.gophie2.net.GopherMenuItem;
 import org.gophie2.ui.DesktopUtils;
 import org.gophie2.ui.MessageDisplayer;
 
@@ -31,7 +31,7 @@ public class EmailRequester implements Requester {
     }
 
     @Override
-    public void request(MessageDisplayer messenger, String addressText, GopherItem item) {
+    public void request(MessageDisplayer messenger, String addressText, GopherMenuItem item) {
         String emailAddress = addressText.replace("mailto:", "");
         String confirmText = "Do you want to send an e-mail to \"" + emailAddress + "\"?";
         String[] optionList = new String[]{"Create new e-mail", "Dismiss"};

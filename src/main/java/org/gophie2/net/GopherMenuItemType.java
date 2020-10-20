@@ -19,7 +19,7 @@ package org.gophie2.net;
 /**
  * defines the official types of gopher items
  */
-public enum GopherItemType {
+public enum GopherMenuItemType {
     /* Canonical types */
     TEXTFILE("0", "txt", false, "Text file"), // 0 = Text file
     GOPHERMENU("1", "gophermap", false, "Gopher menu"), // 1 = Gopher (sub-)menu
@@ -47,7 +47,7 @@ public enum GopherItemType {
     private final String typeName;
     private final String code;
 
-    private GopherItemType(String code, String fileExtension, boolean isBinary, String typeName) {
+    private GopherMenuItemType(String code, String fileExtension, boolean isBinary, String typeName) {
         this.code = code;
         this.fileExt = fileExtension;
         this.binary = isBinary;
@@ -86,8 +86,8 @@ public enum GopherItemType {
         return code;
     }
 
-    public static GopherItemType getByCode(String code) {
-        for (GopherItemType t : values()) {
+    public static GopherMenuItemType getByCode(String code) {
+        for (GopherMenuItemType t : values()) {
             if (t.code.equals(code)) {
                 return t;
             }
@@ -96,14 +96,14 @@ public enum GopherItemType {
     }
 
     public boolean isUrlDisplayable() {
-        return this != GopherItemType.UNKNOWN & this != GopherItemType.INFORMATION;
+        return this != GopherMenuItemType.UNKNOWN & this != GopherMenuItemType.INFORMATION;
     }
 
     public boolean isImage() {
-        return this == GopherItemType.IMAGE_FILE || this == GopherItemType.GIF_FILE;
+        return this == GopherMenuItemType.IMAGE_FILE || this == GopherMenuItemType.GIF_FILE;
     }
 
     public boolean isMenu() {
-        return this == GopherItemType.GOPHERMENU || this == GopherItemType.UNKNOWN;
+        return this == GopherMenuItemType.GOPHERMENU || this == GopherMenuItemType.UNKNOWN;
     }
 }

@@ -19,8 +19,8 @@ package org.gophie2.ui.tk.download;
 import java.awt.FileDialog;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.net.DownloadItem;
-import org.gophie2.net.DownloadList;
-import org.gophie2.net.GopherItem;
+import org.gophie2.net.Downloads;
+import org.gophie2.net.GopherMenuItem;
 import org.gophie2.ui.MainWindow;
 import org.gophie2.ui.MessageDisplayer;
 import org.gophie2.ui.event.PageMenuEventAdapter;
@@ -32,17 +32,17 @@ import org.gophie2.ui.tk.requesters.Requester;
  */
 public class ConfirmDownload extends PageMenuEventAdapter implements Requester {
 
-    private final DownloadList downloadList;
+    private final Downloads downloadList;
     private final MainWindow parent;
 
     public ConfirmDownload(MainWindow parent) {
         this.parent = parent;
-        downloadList = DownloadList.INSTANCE;
+        downloadList = Downloads.INSTANCE;
 
     }
 
     @Override
-    public void request(MessageDisplayer messenger, String addressText, GopherItem item) {
+    public void request(MessageDisplayer messenger, String addressText, GopherMenuItem item) {
         /* binary files are handled by the download manager */
         String confirmText = "Download \"" + item.getFileName()
                 + "\" from \"" + item.getHostName() + "\"?";
@@ -69,7 +69,7 @@ public class ConfirmDownload extends PageMenuEventAdapter implements Requester {
         });
     }
 
-    private void initiateDownload(GopherItem fileItem) {
+    private void initiateDownload(GopherMenuItem fileItem) {
         /* let user select where to store the file */
         FileDialog fileDialog = new FileDialog(parent.getMainWindowFrame(), "Download and save file", FileDialog.SAVE);
         fileDialog.setFile(fileItem.getFileNameWithForcedExt());
@@ -83,7 +83,7 @@ public class ConfirmDownload extends PageMenuEventAdapter implements Requester {
     }
 
     @Override
-    public void itemDownloadRequested(GopherItem item) {
+    public void itemDownloadRequested(GopherMenuItem item) {
         initiateDownload(item);
     }
 }

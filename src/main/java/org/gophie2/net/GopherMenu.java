@@ -30,7 +30,7 @@ import org.gophie2.config.ConfigurationManager;
  * A GopherMenu page object that contains all information and Gopher items
  * provided in the underlying Gopher Menu
  */
-public class GopherPage {
+public class GopherMenu {
 
     /* defines the default charset */
     private static final String GOPHERPAGE_DEFAULT_CHARSET = "UTF-8";
@@ -38,8 +38,8 @@ public class GopherPage {
     /* local variables */
     private byte[] sourceCode;
     private GopherUrl url;
-    private List<GopherItem> itemList;
-    private GopherItemType contentType = GopherItemType.UNKNOWN;
+    private List<GopherMenuItem> itemList;
+    private GopherMenuItemType contentType = GopherMenuItemType.UNKNOWN;
 
     /**
      * Constructs the GopherPage object and if it is a gopher menu or unknown it
@@ -52,7 +52,7 @@ public class GopherPage {
      *
      * @param gopherPageUrl The URL of the gopher page
      */
-    public GopherPage(byte[] gopherPageSourceCode, GopherItemType gopherContentType, GopherUrl gopherPageUrl) {
+    public GopherMenu(byte[] gopherPageSourceCode, GopherMenuItemType gopherContentType, GopherUrl gopherPageUrl) {
         this.sourceCode = gopherPageSourceCode;
         this.url = gopherPageUrl;
         this.itemList = new ArrayList<>();
@@ -64,14 +64,14 @@ public class GopherPage {
                 this.parse();
 
                 /* parsing succeeded, define as gopher menu */
-                this.contentType = GopherItemType.GOPHERMENU;
+                this.contentType = GopherMenuItemType.GOPHERMENU;
             } catch (Exception ex) {
                 /* output the parser exception */
                 System.out.println("Failed to parse gophermenu: " + ex.getMessage());
                 ex.printStackTrace();
 
                 /* parsing failed for whatever, define as text */
-                this.contentType = GopherItemType.TEXTFILE;
+                this.contentType = GopherMenuItemType.TEXTFILE;
             }
         } else {
             /* set the supplied content type */
@@ -84,7 +84,7 @@ public class GopherPage {
      *
      * @return The content type as gopher item type
      */
-    public GopherItemType getContentType() {
+    public GopherMenuItemType getContentType() {
         return this.contentType;
     }
 
@@ -123,8 +123,8 @@ public class GopherPage {
      */
     public String getSourceCode() {
         try {
-            return new String(this.sourceCode, ConfigurationManager.getConfigFile()
-                    .get("Network", "DEFAULT_CHARSET", GOPHERPAGE_DEFAULT_CHARSET));
+            String charset = ConfigurationManager.getConfigFile().get("Network", "DEFAULT_CHARSET", GOPHERPAGE_DEFAULT_CHARSET);
+            return new String(this.sourceCode, charset);
         } catch (UnsupportedEncodingException ex) {
             /* drop a quick info on the console when decoding fails */
             System.out.println("Failed to decode bytes of Gopher Page: " + ex.getMessage());
@@ -144,9 +144,9 @@ public class GopherPage {
     /**
      * Returns an array list with all gopher items of this page
      *
-     * @return ArrayList with all GopherItem objects
+     * @return ArrayList with all GopherMenuItem objects
      */
-    public List<GopherItem> getItemList() {
+    public List<GopherMenuItem> getItemList() {
         return this.itemList;
     }
 
@@ -160,7 +160,7 @@ public class GopherPage {
 
         if (this.itemList.size() > 0) {
             /* get the actual text from all gopher items */
-            for (GopherItem item : this.itemList) {
+            for (GopherMenuItem item : this.itemList) {
                 result += item.getUserDisplayString() + "\n";
             }
         } else {
@@ -228,7 +228,7 @@ public class GopherPage {
         String[] itemSourceList = this.getSourceCode().split("\n");
         for (String itemSource : itemSourceList) {
             if (itemSource.length() > 0 && itemSource.equals(".") == false) {
-                this.itemList.add(new GopherItem(itemSource));
+                this.itemList.add(new GopherMenuItem(itemSource));
             }
         }
     }

@@ -16,13 +16,13 @@
  */
 package org.gophie2.ui.tk.requesters;
 
-import org.gophie2.net.GopherClient;
-import org.gophie2.net.GopherItem;
-import org.gophie2.net.GopherItemType;
 import org.gophie2.net.GopherTransport;
+import org.gophie2.net.GopherMenuItem;
+import org.gophie2.net.GopherMenuItemType;
 import org.gophie2.ui.MainWindow;
 import org.gophie2.ui.MessageDisplayer;
 import org.gophie2.ui.NavigationBar;
+import org.gophie2.net.Transport;
 
 /**
  *
@@ -30,14 +30,14 @@ import org.gophie2.ui.NavigationBar;
  */
 public class GopherRequester implements Requester {
 
-    private final GopherTransport gopherClient;
+    private final Transport gopherClient;
     private final MainWindow parent;
     private final NavigationBar navigation;
 
     public GopherRequester(MainWindow parent, NavigationBar navigationBar) {
         this.parent = parent;
         this.navigation = navigationBar;
-        gopherClient = new GopherClient();
+        gopherClient = new GopherTransport();
 
     }
 
@@ -46,11 +46,11 @@ public class GopherRequester implements Requester {
     }
 
     @Override
-    public void request(MessageDisplayer messenger, String addressText, GopherItem item) {
+    public void request(MessageDisplayer messenger, String addressText, GopherMenuItem item) {
         request(messenger, addressText, item.getItemType());
     }
 
-    public void request(MessageDisplayer messenger, String addressText, GopherItemType itemType) {
+    public void request(MessageDisplayer messenger, String addressText, GopherMenuItemType itemType) {
         /* this is default gopher content */
  /* activate the load indicator in the address bar */
         navigation.setIsLoading(true);

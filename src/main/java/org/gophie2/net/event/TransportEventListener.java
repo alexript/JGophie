@@ -17,9 +17,15 @@
  */
 package org.gophie2.net.event;
 
-public interface DownloadListEventListener {
+import org.gophie2.net.Error;
+import org.gophie2.net.GopherMenu;
+import org.gophie2.net.GopherUrl;
 
-    void downloadListUpdated();
+public interface TransportEventListener {
 
-    void downloadProgressReported();
+    void progress(GopherUrl url, long byteCount);
+
+    void loaded(GopherMenu result);
+
+    void failed(Error error, GopherUrl url);
 }

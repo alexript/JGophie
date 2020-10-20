@@ -17,7 +17,7 @@
 package org.gophie2.ui.tk.history;
 
 import java.util.ArrayList;
-import org.gophie2.net.GopherPage;
+import org.gophie2.net.GopherMenu;
 import org.gophie2.ui.MainWindow;
 import org.gophie2.ui.NavigationBar;
 
@@ -25,7 +25,7 @@ import org.gophie2.ui.NavigationBar;
  *
  * @author malyshev
  */
-public class History extends ArrayList<GopherPage> {
+public class History extends ArrayList<GopherMenu> {
 
     private static final long serialVersionUID = 5761909433840183093L;
     private int historyPosition;
@@ -39,7 +39,7 @@ public class History extends ArrayList<GopherPage> {
         historyPosition = -1;
     }
 
-    public void updateHistory(GopherPage page) {
+    public void updateHistory(GopherMenu page) {
         Boolean addToHistory = false;
 
         /* check if current position is at last page */
@@ -67,7 +67,7 @@ public class History extends ArrayList<GopherPage> {
                     up until the current page and add this page as a new
                     branch to the history, eliminating the
                     previous branch forward */
-                ArrayList<GopherPage> updatedHistory = new ArrayList<>();
+                ArrayList<GopherMenu> updatedHistory = new ArrayList<>();
                 for (int h = 0; h <= historyPosition; h++) {
                     updatedHistory.add(get(h));
                 }
@@ -113,7 +113,7 @@ public class History extends ArrayList<GopherPage> {
         }
     }
 
-    public GopherPage current() {
+    public GopherMenu current() {
         return get(historyPosition);
     }
 
@@ -123,7 +123,7 @@ public class History extends ArrayList<GopherPage> {
             historyPosition--;
 
             /* get the new page from history */
-            parent.pageLoaded(get(historyPosition));
+            parent.loaded(get(historyPosition));
 
             /* update the history */
             updateHistory(get(historyPosition));
@@ -136,7 +136,7 @@ public class History extends ArrayList<GopherPage> {
             historyPosition++;
 
             /* get the new page from history */
-            parent.pageLoaded(get(historyPosition));
+            parent.loaded(get(historyPosition));
 
             /* update the history */
             updateHistory(get(historyPosition));

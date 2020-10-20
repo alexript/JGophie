@@ -17,12 +17,12 @@
  */
 package org.gophie2.net;
 
-public class GopherItem {
+public class GopherMenuItem {
 
     private static final int DEFAULT_PORT = 70;
 
     /* defines the type of this gopher item */
-    private GopherItemType itemType;
+    private GopherMenuItemType itemType;
 
     /* the user display string of this gopher item */
     private String userDisplayString;
@@ -39,10 +39,10 @@ public class GopherItem {
     /* constructs the gopher item taking the single line and parsing its content into the structure of this object
      *   @line       the single gophermenu line for this item
      */
-    public GopherItem(String line) {
+    public GopherMenuItem(String line) {
         this();
         /* type code is defined as first character in line */
-        this.itemType = GopherItemType.getByCode(line.substring(0, 1));
+        this.itemType = GopherMenuItemType.getByCode(line.substring(0, 1));
 
         /* get all properties for this item */
         String[] property = line.replace("\r", "").replace("\n", "").split("\t");
@@ -81,18 +81,18 @@ public class GopherItem {
      * Constructs an empty gopher item
      *
      */
-    public GopherItem() {
+    public GopherMenuItem() {
         portNumber = DEFAULT_PORT;
-        itemType = GopherItemType.UNKNOWN;
+        itemType = GopherMenuItemType.UNKNOWN;
         userDisplayString = "";
         selector = "";
         hostName = "";
     }
 
     /*
-        Returns the item type as GopherItemType enum
+        Returns the item type as GopherMenuItemType enum
      */
-    public GopherItemType getItemType() {
+    public GopherMenuItemType getItemType() {
         return this.itemType;
     }
 

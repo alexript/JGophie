@@ -21,17 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gophie2.net.event.DownloadItemEventListener;
-import org.gophie2.net.event.DownloadListEventListener;
+import org.gophie2.net.event.DownloadsEventListener;
 
-public class DownloadList extends ArrayList<DownloadItem> implements DownloadItemEventListener {
+public class Downloads extends ArrayList<DownloadItem> implements DownloadItemEventListener {
 
     private static final long serialVersionUID = 9087143027422522375L;
-    public static final DownloadList INSTANCE = new DownloadList();
+    public static final Downloads INSTANCE = new Downloads();
 
     /* event listeners for list updated */
-    private final List<DownloadListEventListener> eventListener;
+    private final List<DownloadsEventListener> eventListener;
 
-    private DownloadList() {
+    private Downloads() {
         this.eventListener = new ArrayList<>();
     }
 
@@ -74,13 +74,13 @@ public class DownloadList extends ArrayList<DownloadItem> implements DownloadIte
         this.notifyUpdate();
     }
 
-    public void addEventListener(DownloadListEventListener listener) {
+    public void addEventListener(DownloadsEventListener listener) {
         this.eventListener.add(listener);
     }
 
     private void notifyUpdate() {
         this.eventListener.forEach((listener) -> {
-            listener.downloadListUpdated();
+            listener.updated();
         });
     }
 
@@ -99,9 +99,9 @@ public class DownloadList extends ArrayList<DownloadItem> implements DownloadIte
     }
 
     @Override
-    public void downloadProgressReported() {
+    public void progressReported() {
         this.eventListener.forEach((listener) -> {
-            listener.downloadProgressReported();
+            listener.progressReported();
         });
     }
 }

@@ -19,5 +19,5 @@ package org.gophie2.net.event;
 
 public interface DownloadItemEventListener {
 
-    void downloadProgressReported();
+    void progressReported();
 }

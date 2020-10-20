@@ -26,13 +26,13 @@ public class DownloadItem {
 
 
     /* local objects and variables */
-    private GopherItem item;
-    private final GopherTransport client;
+    private GopherMenuItem item;
+    private final Transport client;
     private String fileName;
 
     private DownloadStatus status = DownloadStatus.IDLE;
     private final List<DownloadItemEventListener> eventListenerList;
-    private DownloadItemListener downloadItemListener;
+    private final DownloadItemListener downloadItemListener;
 
     /**
      * Constructor creates the download and starts it immediately
@@ -43,9 +43,9 @@ public class DownloadItem {
      *
      * @param openWhenFinished If true, opens the file when finished
      */
-    public DownloadItem(GopherItem gopherItem, String targetFile, Boolean openWhenFinished) {
+    public DownloadItem(GopherMenuItem gopherItem, String targetFile, Boolean openWhenFinished) {
         eventListenerList = new ArrayList<>();
-        client = new GopherClient();
+        client = new GopherTransport();
         status = DownloadStatus.IDLE;
         item = gopherItem;
         fileName = targetFile;
@@ -59,7 +59,7 @@ public class DownloadItem {
 
     protected void notifyProgress() {
         eventListenerList.forEach((listener) -> {
-            listener.downloadProgressReported();
+            listener.progressReported();
         });
     }
 
@@ -101,7 +101,7 @@ public class DownloadItem {
      *
      * @param gopherItem The gopher item to download
      */
-    public void setGopherItem(GopherItem gopherItem) {
+    public void setGopherItem(GopherMenuItem gopherItem) {
         item = gopherItem;
     }
 
@@ -110,7 +110,7 @@ public class DownloadItem {
      *
      * @return Returns the gopher item to download
      */
-    public GopherItem getGopherItem() {
+    public GopherMenuItem getGopherItem() {
         return item;
     }
 

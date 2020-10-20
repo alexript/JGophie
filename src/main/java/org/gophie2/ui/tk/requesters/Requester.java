@@ -16,7 +16,7 @@
  */
 package org.gophie2.ui.tk.requesters;
 
-import org.gophie2.net.GopherItem;
+import org.gophie2.net.GopherMenuItem;
 import org.gophie2.ui.MessageDisplayer;
 
 /**
@@ -25,5 +25,5 @@ import org.gophie2.ui.MessageDisplayer;
  */
 public interface Requester {
 
-    void request(MessageDisplayer messenger, String addressText, GopherItem item);
+    void request(MessageDisplayer messenger, String addressText, GopherMenuItem item);
 }

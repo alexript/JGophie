@@ -27,8 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.fonts.DefaultFont;
-import org.gophie2.net.GopherItem;
-import org.gophie2.net.GopherItemType;
+import org.gophie2.net.GopherMenuItem;
+import org.gophie2.net.GopherMenuItemType;
 import org.gophie2.ui.MessageDisplayer;
 
 import org.gophie2.ui.event.SearchInputListener;
@@ -94,12 +94,12 @@ public class SearchPanel extends JPanel implements Requester {
     }
 
     @Override
-    public void request(MessageDisplayer messenger, String addressText, GopherItem item) {
+    public void request(MessageDisplayer messenger, String addressText, GopherMenuItem item) {
         /* show the search interface */
         performSearch(item.getUserDisplayString(), (String text) -> {
             /* execute search through gopher */
             String searchQueryText = addressText + "\t" + text;
-            gopher.request(messenger, searchQueryText, GopherItemType.GOPHERMENU);
+            gopher.request(messenger, searchQueryText, GopherMenuItemType.GOPHERMENU);
         });
 
     }

@@ -35,12 +35,11 @@ import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigFile;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.view.DataSizeView;
-import org.gophie2.net.GopherItem;
-import org.gophie2.net.GopherItemType;
-import org.gophie2.net.GopherPage;
+import org.gophie2.net.GopherMenuItem;
+import org.gophie2.net.GopherMenuItemType;
+import org.gophie2.net.GopherMenu;
 import org.gophie2.net.GopherUrl;
-import org.gophie2.net.event.GopherClientEventListener;
-import org.gophie2.net.event.GopherError;
+import org.gophie2.net.Error;
 import org.gophie2.ui.event.NavigationInputListener;
 import org.gophie2.ui.event.PageMenuEventAdapter;
 import org.gophie2.ui.event.PageMenuEventListener;
@@ -51,8 +50,9 @@ import org.gophie2.ui.tk.requesters.GopherRequester;
 import org.gophie2.ui.tk.requesters.Requester;
 import org.gophie2.ui.tk.requesters.TelnetRequester;
 import org.gophie2.ui.tk.requesters.WebRequester;
+import org.gophie2.net.event.TransportEventListener;
 
-public class MainWindow extends PageMenuEventAdapter implements NavigationInputListener, GopherClientEventListener, PageMenuEventListener {
+public class MainWindow extends PageMenuEventAdapter implements NavigationInputListener, TransportEventListener, PageMenuEventListener {
 
     public static final String APPLICATION_TITLE = "Gophie2";
 
@@ -136,7 +136,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         frame.setVisible(true);
 
         /* fetch the default gopher home */
-        gopher.request(messageView, gopherHome, GopherItemType.GOPHERMENU);
+        gopher.request(messageView, gopherHome, GopherMenuItemType.GOPHERMENU);
     }
 
     public void show() {
@@ -146,7 +146,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
     }
 
     @Override
-    public void addressRequested(String addressText, GopherItem item) {
+    public void addressRequested(String addressText, GopherMenuItem item) {
         Requester requester;
         /* check if this file is binary or not as
             binaries such as media or other files
@@ -216,7 +216,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
     @Override
     public void refreshRequested() {
         /* get the current gopher page to reload it */
-        GopherPage currentPage = history.current();
+        GopherMenu currentPage = history.current();
 
         /* reload practically means just requesting this page again */
         gopher.request(messageView, currentPage.getUrl().getUrlString(), currentPage.getContentType());
@@ -228,11 +228,11 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         gopher.cancel();
 
         /* notify the local handler about cancellation by the user */
-        pageLoadFailed(GopherError.USER_CANCELLED, null);
+        failed(Error.USER_CANCELLED, null);
     }
 
     @Override
-    public void pageLoaded(GopherPage result) {
+    public void loaded(GopherMenu result) {
         /* set the window title to the url of this page */
         frame.setTitle(result.getUrl().getUrlString()
                 + " (" + DataSizeView.get(result.getByteArray().length) + ")"
@@ -242,7 +242,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
         navigationBar.setAddressText(result.getUrl().getUrlString());
 
         /* detect the content type and determine how the handle it */
-        if (result.getContentType() == GopherItemType.GOPHERMENU) {
+        if (result.getContentType() == GopherMenuItemType.GOPHERMENU) {
             /* this is a gopher menu hence it is rendered like
                 one including highlighting of links and
                 the menu icons for the various item types */
@@ -262,7 +262,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
     }
 
     @Override
-    public void pageLoadFailed(GopherError error, GopherUrl url) {
+    public void failed(Error error, GopherUrl url) {
         String infoText = null;
         switch (error) {
             case CONNECT_FAILED:
@@ -321,7 +321,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
     }
 
     @Override
-    public void pageSaveRequested(GopherPage page) {
+    public void pageSaveRequested(GopherMenu page) {
         /* let user select where to store the file */
         FileDialog fileDialog = new FileDialog(frame, "Save current file", FileDialog.SAVE);
         fileDialog.setFile(page.getFileName());
@@ -344,7 +344,7 @@ public class MainWindow extends PageMenuEventAdapter implements NavigationInputL
     public void homeGopherRequested() {
         ConfigFile configFile = ConfigurationManager.getConfigFile();
         String homeGopherUrl = configFile.get("Navigation", "GOPHERHOME", DEFAULT_GOPHERHOME);
-        gopher.request(messageView, homeGopherUrl, GopherItemType.GOPHERMENU);
+        gopher.request(messageView, homeGopherUrl, GopherMenuItemType.GOPHERMENU);
         navigationBar.setAddressText(homeGopherUrl);
     }
 }

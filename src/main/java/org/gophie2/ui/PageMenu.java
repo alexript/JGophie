@@ -30,9 +30,9 @@ import javax.imageio.ImageIO;
 
 import org.gophie2.ui.event.PageMenuEventListener;
 import org.gophie2.ui.util.ImageTransferable;
-import org.gophie2.net.GopherPage;
-import org.gophie2.net.GopherItemType;
-import org.gophie2.net.GopherItem;
+import org.gophie2.net.GopherMenu;
+import org.gophie2.net.GopherMenuItemType;
+import org.gophie2.net.GopherMenuItem;
 
 public class PageMenu extends PopupMenu {
 
@@ -55,8 +55,8 @@ public class PageMenu extends PopupMenu {
 
     /* private variables */
     private String selectedText = "";
-    private GopherItem targetLink;
-    private GopherPage currentPage;
+    private GopherMenuItem targetLink;
+    private GopherMenu currentPage;
 
     /* list with event listeners to report to */
     private ArrayList<PageMenuEventListener> eventListenerList = new ArrayList<>();
@@ -239,7 +239,7 @@ public class PageMenu extends PopupMenu {
 
                 /* only allow setting as home gopher when
                     this page is a gopher menu page */
-                if (currentPage.getContentType() == GopherItemType.GOPHERMENU) {
+                if (currentPage.getContentType() == GopherMenuItemType.GOPHERMENU) {
                     this.addSeparator();
                     this.add(this.setHomeGopherItem);
                 }
@@ -270,7 +270,7 @@ public class PageMenu extends PopupMenu {
      */
     private void copyImageToClipboard() {
         if (currentPage != null) {
-            GopherItemType contentType = currentPage.getContentType();
+            GopherMenuItemType contentType = currentPage.getContentType();
             if (contentType.isImage()) {
                 /* seems to be a valid image file, copy it to clipboard */
                 try {
@@ -297,7 +297,7 @@ public class PageMenu extends PopupMenu {
         clipboard.setContents((new StringSelection(text)), null);
     }
 
-    public void setCurrentPage(GopherPage value) {
+    public void setCurrentPage(GopherMenu value) {
         /* reset the link target when a new page was loaded */
         this.targetLink = null;
 
@@ -305,7 +305,7 @@ public class PageMenu extends PopupMenu {
         this.currentPage = value;
     }
 
-    public void setLinkTarget(GopherItem value) {
+    public void setLinkTarget(GopherMenuItem value) {
         this.targetLink = value;
     }
 

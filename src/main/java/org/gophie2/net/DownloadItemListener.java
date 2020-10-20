@@ -16,14 +16,13 @@
  */
 package org.gophie2.net;
 
-import org.gophie2.net.event.GopherClientEventListener;
-import org.gophie2.net.event.GopherError;
+import org.gophie2.net.event.TransportEventListener;
 
 /**
  *
  * @author malyshev
  */
-public class DownloadItemListener implements GopherClientEventListener {
+public class DownloadItemListener implements TransportEventListener {
 
     private final DownloadItem item;
 
@@ -82,7 +81,7 @@ public class DownloadItemListener implements GopherClientEventListener {
     }
 
     @Override
-    public void pageLoaded(GopherPage result) {
+    public void loaded(GopherMenu result) {
         /* set the status to complete */
         item.setStatus(DownloadStatus.COMPLETED);
 
@@ -95,7 +94,7 @@ public class DownloadItemListener implements GopherClientEventListener {
     }
 
     @Override
-    public void pageLoadFailed(GopherError error, GopherUrl url) {
+    public void failed(Error error, GopherUrl url) {
         item.setStatus(DownloadStatus.FAILED);
         item.notifyProgress();
     }

@@ -41,14 +41,14 @@ import org.gophie2.config.ColorPalette;
 import org.gophie2.config.ConfigurationManager;
 import org.gophie2.fonts.ConsoleFont;
 
-import org.gophie2.net.GopherItem;
-import org.gophie2.net.GopherPage;
-import org.gophie2.net.GopherItemType;
+import org.gophie2.net.GopherMenuItem;
+import org.gophie2.net.GopherMenu;
+import org.gophie2.net.GopherMenuItemType;
 import org.gophie2.ui.event.NavigationInputListener;
 import org.gophie2.ui.event.PageMenuEventListener;
 
 /**
- * The PageView component renders GopherPage objects
+ * The PageView component renders GopherMenu objects
  */
 public class PageView extends JScrollPane {
 
@@ -63,19 +63,19 @@ public class PageView extends JScrollPane {
 
     private List<NavigationInputListener> inputListenerList;
 
-    private GopherPage currentPage = null;
+    private GopherMenu currentPage = null;
 
     public void addListener(NavigationInputListener listener) {
         inputListenerList.add(listener);
     }
 
-    public void showGopherContent(GopherPage content) {
+    public void showGopherContent(GopherMenu content) {
         /* reset the header to just show nothing */
         headerPane.setText("");
 
         /* set current page to the page menu */
         pageMenu.setCurrentPage(content);
-        GopherItemType contentType = content.getContentType();
+        GopherMenuItemType contentType = content.getContentType();
 
         /* check the type of content supplied */
         if (contentType.isImage()) {
@@ -134,7 +134,7 @@ public class PageView extends JScrollPane {
         }
     }
 
-    public void showGopherPage(GopherPage page) {
+    public void showGopherPage(GopherMenu page) {
         /* set the current local gopher page */
         currentPage = page;
 
@@ -146,7 +146,7 @@ public class PageView extends JScrollPane {
         String renderedContent = "<table cellspacing=\"0\" cellpadding=\"2\">";
 
         int lineNumber = 1;
-        for (GopherItem item : page.getItemList()) {
+        for (GopherMenuItem item : page.getItemList()) {
             /* set the content for the row header */
             renderedHeader += "<tr><td class=\"lineNumber\">" + lineNumber + "</td>"
                     + "<td><div class=\"itemIcon\">"
@@ -158,7 +158,7 @@ public class PageView extends JScrollPane {
             String itemCode = "<span class=\"text\">" + itemTitle + "</span>";
 
             /* build links for anything other than infromation items */
-            if (item.getItemType() != GopherItemType.INFORMATION) {
+            if (item.getItemType() != GopherMenuItemType.INFORMATION) {
                 /* create the link for this item */
                 itemCode = "<a href=\"" + item.getUrlString() + "\">" + itemTitle + "</a>";
             }
@@ -268,11 +268,11 @@ public class PageView extends JScrollPane {
             String urlValue = e.getDescription();
 
             /* determine the content type of the link target */
-            GopherItem itemObject = null;
+            GopherMenuItem itemObject = null;
             if (currentPage != null) {
                 /* determine the content type of the gopher item
                 by the definition of it in the gopher menu */
-                for (GopherItem contentItem : currentPage.getItemList()) {
+                for (GopherMenuItem contentItem : currentPage.getItemList()) {
                     if (contentItem.getUrlString().equals(urlValue)) {
                         itemObject = contentItem;
                     }
@@ -317,7 +317,7 @@ public class PageView extends JScrollPane {
         viewPane.requestFocus();
     }
 
-    public String getGopherItemTypeIcon(GopherItemType type) {
+    public String getGopherItemTypeIcon(GopherMenuItemType type) {
         String result = "";
 
         switch (type) {

@@ -17,14 +17,9 @@
  */
 package org.gophie2.net.event;
 
-import org.gophie2.net.GopherPage;
-import org.gophie2.net.GopherUrl;
+public interface DownloadsEventListener {
 
-public interface GopherClientEventListener {
+    void updated();
 
-    void progress(GopherUrl url, long byteCount);
-
-    void pageLoaded(GopherPage result);
-
-    void pageLoadFailed(GopherError error, GopherUrl url);
+    void progressReported();
 }

@@ -29,7 +29,7 @@ import org.gophie2.fonts.DefaultFont;
 import org.gophie2.fonts.IconFont;
 import org.gophie2.images.ImageLoader;
 
-import org.gophie2.net.GopherItem;
+import org.gophie2.net.GopherMenuItem;
 import org.gophie2.ui.event.NavigationInputListener;
 
 public class NavigationBar extends JPanel {
@@ -316,7 +316,7 @@ public class NavigationBar extends JPanel {
             String requestedAddress = inputField.getText().trim();
             if (requestedAddress.length() > 0) {
                 inputListenerList.forEach((inputListener) -> {
-                    inputListener.addressRequested(requestedAddress, new GopherItem());
+                    inputListener.addressRequested(requestedAddress, new GopherMenuItem());
                 });
             }
         });
