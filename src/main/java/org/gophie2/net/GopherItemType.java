@@ -95,4 +95,15 @@ public enum GopherItemType {
         return UNKNOWN;
     }
 
+    public boolean isUrlDisplayable() {
+        return this != GopherItemType.UNKNOWN & this != GopherItemType.INFORMATION;
+    }
+
+    public boolean isImage() {
+        return this == GopherItemType.IMAGE_FILE || this == GopherItemType.GIF_FILE;
+    }
+
+    public boolean isMenu() {
+        return this == GopherItemType.GOPHERMENU || this == GopherItemType.UNKNOWN;
+    }
 }

@@ -19,34 +19,30 @@ package org.gophie2.net;
 
 public class GopherItem {
 
+    private static final int DEFAULT_PORT = 70;
 
     /* defines the type of this gopher item */
-    private GopherItemType itemType = GopherItemType.UNKNOWN;
-
-    /* defines the item type code of this gopher item */
-    private String itemTypeCode = GopherItemType.UNKNOWN.getTypeCode();
+    private GopherItemType itemType;
 
     /* the user display string of this gopher item */
-    private String userDisplayString = "";
+    private String userDisplayString;
 
     /* defines the selector of this gopher item */
-    private String selector = "";
+    private String selector;
 
     /* defines the host name of this gopher item */
-    private String hostName = "";
+    private String hostName;
 
     /* defines the port number of this gopher item */
-    private int portNumber = 70;
+    private int portNumber;
 
-    /* constructs the gopher item taking the single line
-        and parsing its content into the structure of this
-        object
-
-        @line       the single gophermenu line for this item
+    /* constructs the gopher item taking the single line and parsing its content into the structure of this object
+     *   @line       the single gophermenu line for this item
      */
     public GopherItem(String line) {
+        this();
         /* type code is defined as first character in line */
-        this.setItemTypeByCode(line.substring(0, 1));
+        this.itemType = GopherItemType.getByCode(line.substring(0, 1));
 
         /* get all properties for this item */
         String[] property = line.replace("\r", "").replace("\n", "").split("\t");
@@ -86,7 +82,11 @@ public class GopherItem {
      *
      */
     public GopherItem() {
-        /* nothing really happens here */
+        portNumber = DEFAULT_PORT;
+        itemType = GopherItemType.UNKNOWN;
+        userDisplayString = "";
+        selector = "";
+        hostName = "";
     }
 
     /*
@@ -94,13 +94,6 @@ public class GopherItem {
      */
     public GopherItemType getItemType() {
         return this.itemType;
-    }
-
-    /*
-        Returns the item type code as a string
-     */
-    public String getItemTypeCode() {
-        return this.itemTypeCode;
     }
 
     /*
@@ -144,8 +137,7 @@ public class GopherItem {
 
         /* unknown or information links do not have
             any link associated with it */
-        if (this.itemType != GopherItemType.UNKNOWN
-                && this.itemType != GopherItemType.INFORMATION) {
+        if (this.itemType.isUrlDisplayable()) {
             /* check if the selector contains a URL */
             if (this.selector.startsWith("URL:") == true
                     || this.selector.startsWith("/URL:") == true) {
@@ -224,13 +216,4 @@ public class GopherItem {
         return result;
     }
 
-    /**
-     * Sets the code locally and also the proper type enum value
-     *
-     * @param code the single-char gopher item type code
-     */
-    private void setItemTypeByCode(String code) {
-        this.itemTypeCode = code;
-        this.itemType = GopherItemType.getByCode(code);
-    }
 }

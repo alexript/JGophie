@@ -20,7 +20,6 @@ package org.gophie2.ui;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -271,8 +270,8 @@ public class PageMenu extends PopupMenu {
      */
     private void copyImageToClipboard() {
         if (currentPage != null) {
-            if (currentPage.getContentType() == GopherItemType.IMAGE_FILE
-                    || currentPage.getContentType() == GopherItemType.GIF_FILE) {
+            GopherItemType contentType = currentPage.getContentType();
+            if (contentType.isImage()) {
                 /* seems to be a valid image file, copy it to clipboard */
                 try {
                     InputStream imageInputStream = new ByteArrayInputStream(currentPage.getByteArray());

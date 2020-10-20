@@ -25,7 +25,6 @@ import java.util.Base64;
 import java.util.List;
 
 import org.gophie2.config.ConfigurationManager;
-import org.gophie2.net.GopherItemType;
 
 /**
  * A GopherMenu page object that contains all information and Gopher items
@@ -58,8 +57,7 @@ public class GopherPage {
         this.url = gopherPageUrl;
         this.itemList = new ArrayList<>();
 
-        if (gopherContentType == GopherItemType.GOPHERMENU
-                || gopherContentType == GopherItemType.UNKNOWN) {
+        if (gopherContentType.isMenu()) {
             /* try to parse it as a gopher menu */
             try {
                 /* execute the parse process */

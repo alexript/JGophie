@@ -75,17 +75,14 @@ public class PageView extends JScrollPane {
 
         /* set current page to the page menu */
         pageMenu.setCurrentPage(content);
+        GopherItemType contentType = content.getContentType();
 
         /* check the type of content supplied */
-        if (content.getContentType() == GopherItemType.IMAGE_FILE
-                || content.getContentType() == GopherItemType.GIF_FILE) {
+        if (contentType.isImage()) {
             /* try to display as an image */
             try {
                 /* try to identify the file extension */
-                String imageFileExt = ".jpg";
-                if (content.getContentType() == GopherItemType.GIF_FILE) {
-                    imageFileExt = ".gif";
-                }
+                String imageFileExt = "." + contentType.getFileExt();
 
                 /* try to determine the filetype from the url */
                 String imageUrl = content.getUrl().getUrlString();
@@ -153,7 +150,7 @@ public class PageView extends JScrollPane {
             /* set the content for the row header */
             renderedHeader += "<tr><td class=\"lineNumber\">" + lineNumber + "</td>"
                     + "<td><div class=\"itemIcon\">"
-                    + this.getGopherItemTypeIcon(item.getItemTypeCode())
+                    + this.getGopherItemTypeIcon(item.getItemType())
                     + "</div></td></tr>";
 
             /* set the content for the text view */
@@ -161,7 +158,7 @@ public class PageView extends JScrollPane {
             String itemCode = "<span class=\"text\">" + itemTitle + "</span>";
 
             /* build links for anything other than infromation items */
-            if (!item.getItemTypeCode().equals("i")) {
+            if (item.getItemType() != GopherItemType.INFORMATION) {
                 /* create the link for this item */
                 itemCode = "<a href=\"" + item.getUrlString() + "\">" + itemTitle + "</a>";
             }
@@ -320,62 +317,64 @@ public class PageView extends JScrollPane {
         viewPane.requestFocus();
     }
 
-    public String getGopherItemTypeIcon(String code) {
+    public String getGopherItemTypeIcon(GopherItemType type) {
         String result = "";
 
-        if (code.equals("0")) {
-            result = "";
-        }
-        if (code.equals("1")) {
-            result = "";
-        }
-        if (code.equals("2")) {
-            result = "";
-        }
-        if (code.equals("3")) {
-            result = "";
-        }
-        if (code.equals("4")) {
-            result = "";
-        }
-        if (code.equals("5")) {
-            result = "";
-        }
-        if (code.equals("6")) {
-            result = "";
-        }
-        if (code.equals("7")) {
-            result = "";
-        }
-        if (code.equals("8")) {
-            result = "";
-        }
-        if (code.equals("9")) {
-            result = "";
-        }
-        if (code.equals("+")) {
-            result = "";
-        }
-        if (code.equals("g")) {
-            result = "";
-        }
-        if (code.equals("I")) {
-            result = "";
-        }
-        if (code.equals("T")) {
-            result = "";
-        }
-        if (code.equals("h")) {
-            result = "";
-        }
-        if (code.equals("i")) {
-            result = "";
-        }
-        if (code.equals("s")) {
-            result = "";
-        }
-        if (code.equals("?")) {
-            result = "";
+        switch (type) {
+            case TEXTFILE:
+                result = "";
+                break;
+            case GOPHERMENU:
+                result = "";
+                break;
+            case CCSCO_NAMESERVER:
+                result = "";
+                break;
+            case ERRORCODE:
+                result = "";
+                break;
+            case BINHEX_FILE:
+                result = "";
+                break;
+            case DOS_FILE:
+                result = "";
+                break;
+            case UUENCODED_FILE:
+                result = "";
+                break;
+            case FULLTEXT_SEARCH:
+                result = "";
+                break;
+            case TELNET:
+                result = "";
+                break;
+            case BINARY_FILE:
+                result = "";
+                break;
+            case MIRROR:
+                result = "";
+                break;
+            case GIF_FILE:
+                result = "";
+                break;
+            case IMAGE_FILE:
+                result = "";
+                break;
+            case TELNET3270:
+                result = "";
+                break;
+            case HTML_FILE:
+                result = "";
+                break;
+            case INFORMATION:
+                result = "";
+                break;
+            case SOUND_FILE:
+                result = "";
+                break;
+            case UNKNOWN:
+                result = "";
+                break;
         }
 
         return result;
