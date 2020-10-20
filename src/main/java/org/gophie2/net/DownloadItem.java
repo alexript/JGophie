@@ -27,7 +27,7 @@ public class DownloadItem {
 
     /* local objects and variables */
     private GopherItem item;
-    private final GopherClient client;
+    private final GopherTransport client;
     private String fileName;
 
     private DownloadStatus status = DownloadStatus.IDLE;
@@ -84,7 +84,7 @@ public class DownloadItem {
      *
      */
     public void cancel() {
-        client.cancelFetch();
+        client.cancel();
     }
 
     /**

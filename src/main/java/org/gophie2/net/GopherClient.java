@@ -24,20 +24,21 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
-import org.gophie2.net.GopherItemType;
 import org.gophie2.net.event.GopherClientEventListener;
 import org.gophie2.net.event.GopherError;
 
-public class GopherClient {
+public class GopherClient implements GopherTransport {
 
     /* thread with the active fetch process */
     private Thread thread;
-    private Boolean cancelled = false;
+    private Boolean cancelled;
 
-    /**
-     * Cancels a current fetch operation
-     */
-    public void cancelFetch() {
+    public GopherClient() {
+        cancelled = false;
+    }
+
+    @Override
+    public void cancel() {
         if (this.thread != null) {
             this.thread.interrupt();
             this.cancelled = true;
@@ -49,19 +50,11 @@ public class GopherClient {
      *
      * @return true when cancelled, false otherwise
      */
-    public Boolean isCancelled() {
+    private Boolean isCancelled() {
         return this.cancelled;
     }
 
-    /**
-     * Downloads content through gopher and stores it in the define target file
-     *
-     * @param url Url to download the content from
-     *
-     * @param targetFile The file to write the content to
-     *
-     * @param eventListener Listener to report the status to
-     */
+    @Override
     public void downloadAsync(String url, String targetFile, GopherClientEventListener eventListener) {
         /* instanciate the new thread */
         GopherClient clientObject = this;
@@ -126,15 +119,7 @@ public class GopherClient {
         this.thread.start();
     }
 
-    /**
-     * Fetches a gopher page asynchronously
-     *
-     * @param url the url of the gopher page to fetch
-     *
-     * @param contentType the expected content type of the url
-     *
-     * @param eventListener the listener to report the result to
-     */
+    @Override
     public void fetchAsync(String url, GopherItemType contentType, GopherClientEventListener eventListener) {
         /* instanciate the new thread */
         GopherClient clientObject = this;
@@ -160,19 +145,7 @@ public class GopherClient {
         this.thread.start();
     }
 
-    /**
-     * Fetches a gopher page
-     *
-     * @param url the url of the page to fetch
-     *
-     * @param contentType the expected content type
-     *
-     * @param eventListener event listener to report progress to
-     *
-     * @return the fetched gopher page object
-     *
-     * @throws GopherNetworkException Exception with network information
-     */
+    @Override
     public GopherPage fetch(String url, GopherItemType contentType, GopherClientEventListener eventListener) throws GopherNetworkException {
         GopherPage result = null;
 

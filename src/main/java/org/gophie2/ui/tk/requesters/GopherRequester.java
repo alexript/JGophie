@@ -19,6 +19,7 @@ package org.gophie2.ui.tk.requesters;
 import org.gophie2.net.GopherClient;
 import org.gophie2.net.GopherItem;
 import org.gophie2.net.GopherItemType;
+import org.gophie2.net.GopherTransport;
 import org.gophie2.ui.MainWindow;
 import org.gophie2.ui.MessageDisplayer;
 import org.gophie2.ui.NavigationBar;
@@ -29,7 +30,7 @@ import org.gophie2.ui.NavigationBar;
  */
 public class GopherRequester implements Requester {
 
-    private final GopherClient gopherClient;
+    private final GopherTransport gopherClient;
     private final MainWindow parent;
     private final NavigationBar navigation;
 
@@ -41,7 +42,7 @@ public class GopherRequester implements Requester {
     }
 
     public void cancel() {
-        gopherClient.cancelFetch();
+        gopherClient.cancel();
     }
 
     @Override
