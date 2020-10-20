@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.gophie2.net.GopherItem;
+import org.gophie2.ui.DesktopUtils;
 import org.gophie2.ui.MessageDisplayer;
 
 /**
@@ -39,23 +40,9 @@ public class WebRequester implements Requester {
         String[] optionList = new String[]{"Open Website", "Dismiss"};
         messenger.showConfirm(confirmText, optionList, (int option) -> {
             if (option == 0) {
-                /* launch the system WWW browser */
-                if (Desktop.isDesktopSupported() == true
-                        && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                    try {
-                        /* launch the systems WWW browser */
-                        Desktop.getDesktop().browse(new URI(addressText));
-                    } catch (IOException | URISyntaxException ex) {
-                        /* Error: cannot enjoy bloated javascript
-                        stuffed World Wide Web pages! */
-                        System.out.println("Unable to open system's "
-                                + "world wide web browser: " + ex.getMessage());
-                    }
-                }
-                /* hide the message view */
+                DesktopUtils.browse(addressText);
                 messenger.setVisible(false);
             } else {
-                /* hide the message view */
                 messenger.setVisible(false);
             }
         });

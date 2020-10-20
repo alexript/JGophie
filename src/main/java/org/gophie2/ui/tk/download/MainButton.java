@@ -17,6 +17,7 @@
 package org.gophie2.ui.tk.download;
 
 import org.gophie2.net.DownloadItem;
+import org.gophie2.net.DownloadStatus;
 import org.gophie2.ui.tk.buttons.ActionButton;
 import org.gophie2.ui.tk.buttons.ActionButtonEventListener;
 
@@ -33,7 +34,7 @@ public class MainButton extends ActionButton {
         init(listener);
     }
 
-    protected void applyStatus(DownloadItem.DownloadStatus status) {
+    protected void applyStatus(DownloadStatus status) {
         switch (status) {
             case ACTIVE:
                 setContent("", "Abort");

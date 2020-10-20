@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.gophie2.net.GopherItem;
+import org.gophie2.ui.DesktopUtils;
 import org.gophie2.ui.MessageDisplayer;
 
 /**
@@ -43,24 +44,9 @@ public class TelnetRequester implements Requester {
         String[] optionList = new String[]{"Open Telnet", "Dismiss"};
         messenger.showConfirm(confirmText, optionList, (int option) -> {
             if (option == 0) {
-                /* launch the system WWW browser */
-                if (Desktop.isDesktopSupported() == true
-                        && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                    try {
-                        /* launch the systems telnet client by creating
-                        a telnet URI and calling the systems protocol handler */
-                        String telnetUri = "telnet://" + hostName + ":" + portNumber;
-                        Desktop.getDesktop().browse(new URI(telnetUri));
-                    } catch (IOException | URISyntaxException ex) {
-                        /* Error: cannot open telnet client */
-                        System.out.println("Unable to open system's "
-                                + "telnet client: " + ex.getMessage());
-                    }
-                }
-                /* hide the message view */
+                DesktopUtils.browse("telnet://" + hostName + ":" + portNumber);
                 messenger.setVisible(false);
             } else {
-                /* hide the message view */
                 messenger.setVisible(false);
             }
         });

@@ -17,36 +17,22 @@
  */
 package org.gophie2.net;
 
-import java.awt.Desktop;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.gophie2.net.event.DownloadItemEventListener;
-import org.gophie2.net.event.GopherClientEventListener;
-import org.gophie2.net.event.GopherError;
+import org.gophie2.ui.DesktopUtils;
 
-public class DownloadItem implements GopherClientEventListener {
+public class DownloadItem {
 
-    public enum DownloadStatus {
-        IDLE,
-        FAILED,
-        ACTIVE,
-        COMPLETED
-    }
 
     /* local objects and variables */
     private GopherItem item;
     private final GopherClient client;
     private String fileName;
-    private Boolean openFile = false;
-    private long byteCountLoaded = 0;
+
     private DownloadStatus status = DownloadStatus.IDLE;
     private final List<DownloadItemEventListener> eventListenerList;
-
-    /* local variables for calculating the bit rate
-        at which the download currently operates */
-    private long startTimeMillis = 0;
-    private long bytePerSecond = 0;
+    private DownloadItemListener downloadItemListener;
 
     /**
      * Constructor creates the download and starts it immediately
@@ -60,9 +46,10 @@ public class DownloadItem implements GopherClientEventListener {
     public DownloadItem(GopherItem gopherItem, String targetFile, Boolean openWhenFinished) {
         eventListenerList = new ArrayList<>();
         client = new GopherClient();
+        status = DownloadStatus.IDLE;
         item = gopherItem;
         fileName = targetFile;
-        openFile = openWhenFinished;
+        downloadItemListener = new DownloadItemListener(this, openWhenFinished);
         start();
     }
 
@@ -70,20 +57,10 @@ public class DownloadItem implements GopherClientEventListener {
         eventListenerList.add(listener);
     }
 
-    private void notifyProgress() {
+    protected void notifyProgress() {
         eventListenerList.forEach((listener) -> {
             listener.downloadProgressReported();
         });
-    }
-
-    /**
-     * Constructor creates the item with default values and does not do anything
-     *
-     */
-    public DownloadItem() {
-        eventListenerList = new ArrayList<>();
-        client = new GopherClient();
-        status = DownloadStatus.IDLE;
     }
 
     /**
@@ -91,7 +68,7 @@ public class DownloadItem implements GopherClientEventListener {
      */
     public final void start() {
         /* start the download process */
-        client.downloadAsync(item.getUrlString(), fileName, this);
+        client.downloadAsync(item.getUrlString(), fileName, new DownloadItemListener(this));
         status = DownloadStatus.ACTIVE;
     }
 
@@ -99,13 +76,7 @@ public class DownloadItem implements GopherClientEventListener {
      * Tries to delete the file
      */
     public void deleteFile() {
-        try {
-            File file = new File(fileName);
-            file.delete();
-        } catch (Exception ex) {
-            /* just log the error and keep the crap, what else to do? */
-            System.out.println("Failed to delete downloaded file (" + fileName + "): " + ex.getMessage());
-        }
+        DesktopUtils.deleteFile(fileName);
     }
 
     /**
@@ -152,74 +123,23 @@ public class DownloadItem implements GopherClientEventListener {
         return status;
     }
 
-    /**
-     * Returns the number of bytes loaded
-     *
-     * @return The number of bytes loaded as long
-     */
+    protected void setStatus(DownloadStatus status) {
+        this.status = status;
+    }
+
     public long getByteCountLoaded() {
-        return byteCountLoaded;
+        return downloadItemListener.getByteCountLoaded();
     }
 
     public long getBytePerSecond() {
-        return bytePerSecond;
+        return downloadItemListener.getBytePerSecond();
     }
 
     /**
      * Opens the file on the users desktop
      */
     public void openFileOnDesktop() {
-        try {
-            /* use the desktop to open the file */
-            if (Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().open(new File(fileName));
-            } else {
-                /* no desktop support here, report one level up */
-                throw new Exception("Desktop not supported");
-            }
-        } catch (Exception ex) {
-            /* output the exception that the file could not be opened */
-            System.out.println("Unable to open file after download " + "(" + fileName + "):" + ex.getMessage());
-        }
+        DesktopUtils.openFileOnDesktop(fileName);
     }
 
-    @Override
-    public void progress(GopherUrl url, long byteCount) {
-        /* set start time to calculate total duration */
-        if (startTimeMillis == 0) {
-            /* use time in milliseconds */
-            startTimeMillis = System.currentTimeMillis();
-        }
-
-        /* calculate the bitrate of the download */
-        long timeNow = System.currentTimeMillis();
-        long duration = ((timeNow - startTimeMillis) / 1000);
-        if (duration > 0 && byteCount > 0) {
-            bytePerSecond = (byteCount / duration);
-        }
-
-        /* update the local byte counter  */
-        byteCountLoaded = byteCount;
-
-        notifyProgress();
-    }
-
-    @Override
-    public void pageLoaded(GopherPage result) {
-        /* set the status to complete */
-        status = DownloadStatus.COMPLETED;
-
-        /* check if file open was requested */
-        if (openFile) {
-            openFileOnDesktop();
-        }
-
-        notifyProgress();
-    }
-
-    @Override
-    public void pageLoadFailed(GopherError error, GopherUrl url) {
-        status = DownloadStatus.FAILED;
-        notifyProgress();
-    }
 }

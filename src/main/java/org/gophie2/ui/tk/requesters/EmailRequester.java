@@ -16,11 +16,8 @@
  */
 package org.gophie2.ui.tk.requesters;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import org.gophie2.net.GopherItem;
+import org.gophie2.ui.DesktopUtils;
 import org.gophie2.ui.MessageDisplayer;
 
 /**
@@ -40,22 +37,9 @@ public class EmailRequester implements Requester {
         String[] optionList = new String[]{"Create new e-mail", "Dismiss"};
         messenger.showConfirm(confirmText, optionList, (int option) -> {
             if (option == 0) {
-                /* launch the system email client */
-                if (Desktop.isDesktopSupported() == true
-                        && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                    try {
-                        /* launch the mailto handler of the system */
-                        Desktop.getDesktop().browse(new URI("mailto:" + emailAddress));
-                    } catch (IOException | URISyntaxException ex) {
-                        /* Error: cannot open email client */
-                        System.out.println("Unable to open system's "
-                                + "email client: " + ex.getMessage());
-                    }
-                }
-                /* hide the message view */
+                DesktopUtils.browse("mailto:" + emailAddress);
                 messenger.setVisible(false);
             } else {
-                /* hide the message view */
                 messenger.setVisible(false);
             }
         });

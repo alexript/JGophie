@@ -20,7 +20,7 @@ package org.gophie2.net;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.gophie2.net.DownloadItem.DownloadStatus;
+import org.gophie2.net.DownloadStatus;
 import org.gophie2.net.event.DownloadItemEventListener;
 import org.gophie2.net.event.DownloadListEventListener;
 
